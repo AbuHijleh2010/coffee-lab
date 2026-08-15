@@ -53,12 +53,18 @@ function setupEventListeners() {
     });
 
     // Form Submissions
-    document.getElementById('evaluationForm').addEventListener('submit', handleEvaluationSubmit);
-    document.getElementById('addEmployeeForm').addEventListener('submit', handleAddEmployeeSubmit);
+    const evalForm = document.getElementById('evaluationForm');
+    if (evalForm) evalForm.addEventListener('submit', handleEvaluationSubmit);
+
+    const addEmpForm = document.getElementById('addEmployeeForm');
+    if (addEmpForm) addEmpForm.addEventListener('submit', handleAddEmployeeSubmit);
     
     // Supabase Config Form
-    document.getElementById('btnSaveConfig').addEventListener('click', handleSaveSupabaseConfig);
-    document.getElementById('btnClearConfig').addEventListener('click', handleClearSupabaseConfig);
+    const btnSave = document.getElementById('btnSaveConfig');
+    if (btnSave) btnSave.addEventListener('click', handleSaveSupabaseConfig);
+
+    const btnClear = document.getElementById('btnClearConfig');
+    if (btnClear) btnClear.addEventListener('click', handleClearSupabaseConfig);
 
     // Star rating interactions for evaluation form
     setupStarRatingInputs();

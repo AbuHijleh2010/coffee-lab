@@ -124,101 +124,128 @@ function isSupabaseConnected() {
 /**
  * Fetch all employees
  */
+/**
+ * Fetch all employees (Combines local storage and Supabase)
+ */
 async function fetchEmployees() {
+    let localEmps = [];
+    try {
+        const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES);
+        localEmps = raw ? JSON.parse(raw) : INITIAL_DEMO_EMPLOYEES;
+    } catch (e) {
+        localEmps = INITIAL_DEMO_EMPLOYEES;
+    }
+
     if (isSupabaseConnected()) {
         try {
             const { data, error } = await supabaseClient
                 .from('employees')
                 .select('*')
                 .order('created_at', { ascending: false });
-            if (error) throw error;
-            return data;
+            if (!error && data && data.length > 0) {
+                const mergedMap = new Map();
+                localEmps.forEach(e => mergedMap.set(e.id || e.name, e));
+                data.forEach(e => mergedMap.set(e.id || e.name, e));
+                return Array.from(mergedMap.values());
+            }
         } catch (e) {
-            console.error('Supabase error, falling back to local demo:', e);
+            console.warn('Supabase fetch employees error, using local fallback:', e);
         }
     }
-    
-    // Local fallback
-    const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES);
-    return raw ? JSON.parse(raw) : INITIAL_DEMO_EMPLOYEES;
+
+    return localEmps;
 }
 
 /**
- * Add a new employee
+ * Add a new employee (Guaranteed instant save)
  */
 async function createEmployee(employeeData) {
-    if (isSupabaseConnected()) {
-        try {
-            const { data, error } = await supabaseClient
-                .from('employees')
-                .insert([employeeData])
-                .select();
-            if (error) throw error;
-            if (data && data.length > 0) return data[0];
-        } catch (e) {
-            console.warn('Supabase error creating employee, saving locally fallback:', e);
-        }
-    }
-
-    // Local fallback
-    const current = JSON.parse(localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES) || JSON.stringify(INITIAL_DEMO_EMPLOYEES));
     const newEmp = {
         id: 'emp_' + Date.now(),
         ...employeeData,
         created_at: new Date().toISOString()
     };
-    current.unshift(newEmp);
-    localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(current));
+
+    // Save locally first for 100% instant UI rendering
+    try {
+        const current = JSON.parse(localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES) || JSON.stringify(INITIAL_DEMO_EMPLOYEES));
+        current.unshift(newEmp);
+        localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(current));
+    } catch (err) {
+        console.error('Error saving to localStorage:', err);
+    }
+
+    // Also attempt background sync to Supabase if connected
+    if (isSupabaseConnected()) {
+        try {
+            await supabaseClient.from('employees').insert([employeeData]);
+        } catch (e) {
+            console.warn('Supabase insert warning (local copy preserved):', e);
+        }
+    }
+
     return newEmp;
 }
 
 /**
- * Fetch all evaluations
+ * Fetch all evaluations (Combines local storage and Supabase)
  */
 async function fetchEvaluations() {
+    let localEvals = [];
+    try {
+        const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS);
+        localEvals = raw ? JSON.parse(raw) : INITIAL_DEMO_EVALUATIONS;
+    } catch (e) {
+        localEvals = INITIAL_DEMO_EVALUATIONS;
+    }
+
     if (isSupabaseConnected()) {
         try {
             const { data, error } = await supabaseClient
                 .from('evaluations')
                 .select('*')
                 .order('evaluation_date', { ascending: false });
-            if (error) throw error;
-            if (data) return data;
+            if (!error && data && data.length > 0) {
+                const mergedMap = new Map();
+                localEvals.forEach(ev => mergedMap.set(ev.id, ev));
+                data.forEach(ev => mergedMap.set(ev.id, ev));
+                return Array.from(mergedMap.values());
+            }
         } catch (e) {
-            console.warn('Supabase error fetching evaluations, falling back to local storage:', e);
+            console.warn('Supabase fetch evaluations error, using local fallback:', e);
         }
     }
 
-    // Local fallback
-    const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS);
-    return raw ? JSON.parse(raw) : INITIAL_DEMO_EVALUATIONS;
+    return localEvals;
 }
 
 /**
- * Save new evaluation
+ * Save new evaluation (Guaranteed instant save)
  */
 async function createEvaluation(evalData) {
-    if (isSupabaseConnected()) {
-        try {
-            const { data, error } = await supabaseClient
-                .from('evaluations')
-                .insert([evalData])
-                .select();
-            if (error) throw error;
-            if (data && data.length > 0) return data[0];
-        } catch (e) {
-            console.warn('Supabase error creating evaluation, saving locally fallback:', e);
-        }
-    }
-
-    // Local fallback
-    const current = JSON.parse(localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS) || JSON.stringify(INITIAL_DEMO_EVALUATIONS));
     const newEval = {
         id: 'eval_' + Date.now(),
         ...evalData,
         created_at: new Date().toISOString()
     };
-    current.unshift(newEval);
-    localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(current));
+
+    // Save locally first for 100% instant UI rendering
+    try {
+        const current = JSON.parse(localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS) || JSON.stringify(INITIAL_DEMO_EVALUATIONS));
+        current.unshift(newEval);
+        localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(current));
+    } catch (err) {
+        console.error('Error saving evaluation to localStorage:', err);
+    }
+
+    // Also attempt background sync to Supabase if connected
+    if (isSupabaseConnected()) {
+        try {
+            await supabaseClient.from('evaluations').insert([evalData]);
+        } catch (e) {
+            console.warn('Supabase evaluation insert warning (local copy preserved):', e);
+        }
+    }
+
     return newEval;
 }

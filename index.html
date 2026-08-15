@@ -170,7 +170,7 @@
                 <h2><i class="fa-solid fa-pen-to-square"></i> نموذج تقييم موظف (الهيد بار / المسؤول)</h2>
                 <button class="modal-close" onclick="closeModal('evaluationModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <form id="evaluationForm" class="modal-body">
+            <form id="evaluationForm" class="modal-body" onsubmit="handleEvaluationSubmit(event)">
                 <div class="form-group">
                     <label for="evalEmployeeSelect"><i class="fa-solid fa-user"></i> اختر الموظف المراد تقييمه *</label>
                     <select id="evalEmployeeSelect" class="custom-select" required>
@@ -305,7 +305,7 @@
                 <h2><i class="fa-solid fa-user-plus"></i> إضافة موظف جديد لـ Coffee Lab</h2>
                 <button class="modal-close" onclick="closeModal('addEmployeeModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <form id="addEmployeeForm" class="modal-body">
+            <form id="addEmployeeForm" class="modal-body" onsubmit="handleAddEmployeeSubmit(event)">
                 <div class="form-group">
                     <label for="empName"><i class="fa-solid fa-user"></i> اسم الموظف الكامل *</label>
                     <input type="text" id="empName" class="custom-input" placeholder="مثال: خالد العلي" required>
