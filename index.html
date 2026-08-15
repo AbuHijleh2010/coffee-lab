@@ -20,7 +20,7 @@
     <header class="main-header">
         <div class="header-container">
             <div class="brand">
-                <svg class="brand-logo-img" viewBox="0 0 500 500" width="68" height="68" xmlns="http://www.w3.org/2000/svg">
+                <svg class="brand-logo-img" viewBox="0 0 500 500" width="84" height="84" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="250" cy="250" r="242" fill="#323235"/>
                     <circle cx="250" cy="250" r="232" fill="none" stroke="#ffffff" stroke-width="8"/>
                     <circle cx="250" cy="250" r="212" fill="none" stroke="#ffffff" stroke-width="4"/>
@@ -58,11 +58,6 @@
             </div>
 
             <nav class="nav-actions">
-                <button id="supabaseConfigBtn" class="btn btn-outline">
-                    <i class="fa-solid fa-database"></i>
-                    <span>ربط Supabase</span>
-                    <span id="connectionBadge" class="badge badge-warning">توضيحي</span>
-                </button>
                 <button id="addEmployeeBtn" class="btn btn-secondary">
                     <i class="fa-solid fa-user-plus"></i>
                     <span>إضافة موظف</span>
@@ -94,17 +89,6 @@
                 </div>
             </div>
         </section>
-
-        <!-- Connection Notice Banner if using Local/Demo mode -->
-        <div id="demoNoticeBanner" class="demo-banner">
-            <div class="demo-banner-content">
-                <i class="fa-solid fa-circle-info"></i>
-                <span>أنت تستخدم النظام حالياً بالحالة <strong>التجريبية (Local Demo)</strong>. لربطه بقاعدة بيانات Supabase المباشرة، اضغط على <strong>"ربط Supabase"</strong> أعلى الصفحة.</span>
-            </div>
-            <button class="btn-close-banner" onclick="document.getElementById('demoNoticeBanner').style.display='none'">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div>
 
         <!-- Dashboard Stats Widgets -->
         <section class="stats-grid">

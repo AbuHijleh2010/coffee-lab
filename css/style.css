@@ -109,10 +109,10 @@ body {
 }
 
 .brand-logo-img {
-    width: 68px;
-    height: 68px;
+    width: 84px;
+    height: 84px;
     object-fit: contain;
-    filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.25));
+    filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.35));
     transition: var(--transition-fast);
 }
 
