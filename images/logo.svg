@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+    <!-- Dark Charcoal Circle Body -->
+    <circle cx="250" cy="250" r="242" fill="#303033"/>
+    
+    <!-- Double White Outer & Inner Rings -->
+    <circle cx="250" cy="250" r="234" fill="none" stroke="#ffffff" stroke-width="7"/>
+    <circle cx="250" cy="250" r="215" fill="none" stroke="#ffffff" stroke-width="4"/>
+
+    <!-- Vector Word 'Coffee' (No font dependency) -->
+    <g fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+        <!-- C -->
+        <path d="M 175 165 C 160 165 150 175 150 190 C 150 205 160 215 175 215"/>
+        <!-- o -->
+        <circle cx="192" cy="198" r="13"/>
+        <!-- f -->
+        <path d="M 215 215 L 215 175 C 215 168 222 165 228 165 M 210 185 L 224 185"/>
+        <!-- f -->
+        <path d="M 238 215 L 238 175 C 238 168 245 165 251 165 M 233 185 L 247 185"/>
+        <!-- e -->
+        <path d="M 258 198 L 276 198 C 276 186 268 183 258 188 C 250 193 254 213 274 212"/>
+        <!-- e -->
+        <path d="M 284 198 L 302 198 C 302 186 294 183 284 188 C 276 193 280 213 300 212"/>
+    </g>
+
+    <!-- Vector 'L' -->
+    <path d="M 132 145 L 132 308 Q 132 336 160 336 L 188 336" fill="none" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+
+    <!-- Vector 'a' -->
+    <!-- 'a' circle bowl -->
+    <circle cx="230" cy="286" r="44" fill="none" stroke="#ffffff" stroke-width="14"/>
+    <!-- 'a' right stem -->
+    <path d="M 274 242 L 274 336" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+
+    <!-- Vector 'b' -->
+    <!-- 'b' left stem -->
+    <path d="M 326 145 L 326 336" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+
+    <!-- Coffee Cup (bowl of 'b') -->
+    <circle cx="376" cy="280" r="46" fill="#46240d" stroke="#ffffff" stroke-width="12"/>
+    
+    <!-- Crema & Espresso Foam details inside cup -->
+    <ellipse cx="370" cy="275" rx="32" ry="28" fill="#341a09" stroke="#945222" stroke-width="3" opacity="0.8"/>
+    <!-- Bubbles -->
+    <circle cx="350" cy="265" r="5" fill="#c68a4c"/>
+    <circle cx="358" cy="258" r="3.5" fill="#db9e5e"/>
+    <circle cx="342" cy="278" r="6" fill="#c68a4c"/>
+    <circle cx="350" cy="292" r="4" fill="#db9e5e"/>
+    <circle cx="362" cy="300" r="5" fill="#c68a4c"/>
+    <circle cx="375" cy="303" r="3.5" fill="#db9e5e"/>
+
+    <!-- Cup Handle -->
+    <path d="M 424 274 C 448 274, 448 296, 426 304" fill="none" stroke="#ffffff" stroke-width="9" stroke-linecap="round"/>
+</svg>

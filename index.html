@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee Lab - نظام تقييم فريق الباريستا</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Supabase JS Client CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Top Navigation Header (Pure White & Clean) -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="brand">
+                <svg class="brand-logo-img" viewBox="0 0 500 500" width="68" height="68" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="250" cy="250" r="242" fill="#303033"/>
+                    <circle cx="250" cy="250" r="234" fill="none" stroke="#ffffff" stroke-width="7"/>
+                    <circle cx="250" cy="250" r="215" fill="none" stroke="#ffffff" stroke-width="4"/>
+
+                    <g fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M 175 165 C 160 165 150 175 150 190 C 150 205 160 215 175 215"/>
+                        <circle cx="192" cy="198" r="13"/>
+                        <path d="M 215 215 L 215 175 C 215 168 222 165 228 165 M 210 185 L 224 185"/>
+                        <path d="M 238 215 L 238 175 C 238 168 245 165 251 165 M 233 185 L 247 185"/>
+                        <path d="M 258 198 L 276 198 C 276 186 268 183 258 188 C 250 193 254 213 274 212"/>
+                        <path d="M 284 198 L 302 198 C 302 186 294 183 284 188 C 276 193 280 213 300 212"/>
+                    </g>
+
+                    <path d="M 132 145 L 132 308 Q 132 336 160 336 L 188 336" fill="none" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+                    <circle cx="230" cy="286" r="44" fill="none" stroke="#ffffff" stroke-width="14"/>
+                    <path d="M 274 242 L 274 336" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+                    <path d="M 326 145 L 326 336" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+
+                    <circle cx="376" cy="280" r="46" fill="#46240d" stroke="#ffffff" stroke-width="12"/>
+                    <ellipse cx="370" cy="275" rx="32" ry="28" fill="#341a09" stroke="#945222" stroke-width="3" opacity="0.8"/>
+                    <circle cx="350" cy="265" r="5" fill="#c68a4c"/>
+                    <circle cx="358" cy="258" r="3.5" fill="#db9e5e"/>
+                    <circle cx="342" cy="278" r="6" fill="#c68a4c"/>
+                    <circle cx="350" cy="292" r="4" fill="#db9e5e"/>
+                    <circle cx="362" cy="300" r="5" fill="#c68a4c"/>
+                    <circle cx="375" cy="303" r="3.5" fill="#db9e5e"/>
+                    <path d="M 424 274 C 448 274, 448 296, 426 304" fill="none" stroke="#ffffff" stroke-width="9" stroke-linecap="round"/>
+                </svg>
+                <div class="brand-text">
+                    <h1>Coffee Lab</h1>
+                    <span>نظام تقييم كفاءة فريق الباريستا</span>
+                </div>
+            </div>
+
+            <nav class="nav-actions">
+                <button id="supabaseConfigBtn" class="btn btn-outline">
+                    <i class="fa-solid fa-database"></i>
+                    <span>ربط Supabase</span>
+                    <span id="connectionBadge" class="badge badge-warning">توضيحي</span>
+                </button>
+                <button id="addEmployeeBtn" class="btn btn-secondary">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>إضافة موظف</span>
+                </button>
+                <button id="newEvaluationBtn" class="btn btn-primary">
+                    <i class="fa-solid fa-star"></i>
+                    <span>تقييم جديد (الهيد بار)</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="app-container">
+
+        <!-- Hero Section matching coffeelabpalestine.com -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <span class="hero-tag"><i class="fa-solid fa-mug-hot"></i> Coffee Lab Palestine</span>
+                <h1 class="hero-title">Inspiring Coffee</h1>
+                <p class="hero-subtitle">Inspiring Coffee - Since 2019 | نظام تقييم كفاءة وجودة أداء الباريستا ومسؤولي الشفت</p>
+                <div class="hero-actions">
+                    <button onclick="openEvaluationModal()" class="btn btn-hero-white">
+                        <i class="fa-solid fa-pen-to-square"></i> ابدأ تقييم جديد الآن
+                    </button>
+                    <button onclick="document.getElementById('employeesGrid').scrollIntoView({behavior: 'smooth'})" class="btn btn-hero-outline">
+                        <i class="fa-solid fa-users"></i> تصفح فريق الموظفين
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Connection Notice Banner if using Local/Demo mode -->
+        <div id="demoNoticeBanner" class="demo-banner">
+            <div class="demo-banner-content">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>أنت تستخدم النظام حالياً بالحالة <strong>التجريبية (Local Demo)</strong>. لربطه بقاعدة بيانات Supabase المباشرة، اضغط على <strong>"ربط Supabase"</strong> أعلى الصفحة.</span>
+            </div>
+            <button class="btn-close-banner" onclick="document.getElementById('demoNoticeBanner').style.display='none'">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Dashboard Stats Widgets -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon icon-amber">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">إجمالي الفريق</span>
+                    <h3 id="statTotalEmployees" class="stat-value">0</h3>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon icon-gold">
+                    <i class="fa-solid fa-star"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">معدل التقييم العام</span>
+                    <h3 id="statAvgRating" class="stat-value">0.0</h3>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon icon-copper">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">إجمالي التقييمات</span>
+                    <h3 id="statTotalEvaluations" class="stat-value">0</h3>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon icon-green">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">أعلى موظف تقييماً</span>
+                    <h3 id="statTopEmployee" class="stat-value">-</h3>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search and Filter Bar -->
+        <section class="filter-bar">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="بحث باسم الموظف أو المسمى الوظيفي...">
+            </div>
+            <div class="filter-group">
+                <select id="roleFilter" class="custom-select">
+                    <option value="all">كل المسميات الوظيفية</option>
+                    <option value="Head Barista">مسؤول الباريستا (Head Barista)</option>
+                    <option value="Senior Barista">باريستا محترف (Senior Barista)</option>
+                    <option value="Barista">باريستا (Barista)</option>
+                    <option value="Junior Barista">باريستا مبتدئ (Junior Barista)</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Employees List Grid Section -->
+        <section class="employees-section">
+            <div class="section-title">
+                <h2><i class="fa-solid fa-id-card"></i> قائمة موظفي Coffee Lab</h2>
+                <span class="subtitle">اضغط على الموظف لمشاهدة تفاصيل تقييماته وسجل التقييمات التاريخية</span>
+            </div>
+
+            <div id="employeesGrid" class="employees-grid">
+                <!-- Cards will be populated dynamically -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal: Head Barista Evaluation Form -->
+    <div id="evaluationModal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-pen-to-square"></i> نموذج تقييم موظف (الهيد بار / المسؤول)</h2>
+                <button class="modal-close" onclick="closeModal('evaluationModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="evaluationForm" class="modal-body">
+                <div class="form-group">
+                    <label for="evalEmployeeSelect"><i class="fa-solid fa-user"></i> اختر الموظف المراد تقييمه *</label>
+                    <select id="evalEmployeeSelect" class="custom-select" required>
+                        <option value="">-- اختر موظف من القائمة --</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="evaluatorName"><i class="fa-solid fa-user-shield"></i> اسم المقيّم (مسؤول الباريستا) *</label>
+                        <input type="text" id="evaluatorName" class="custom-input" placeholder="مثال: أحمد - Head Barista" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="evaluationDate"><i class="fa-solid fa-calendar-days"></i> تاريخ التقييم *</label>
+                        <input type="date" id="evaluationDate" class="custom-input" required>
+                    </div>
+                </div>
+
+                <!-- Rating Criteria Inputs -->
+                <div class="rating-criteria-container">
+                    <h3><i class="fa-solid fa-sliders"></i> معايير التقييم التفصيلية (من 1 إلى 5):</h3>
+                    
+                    <!-- Criteria 1: Coffee Quality & Espresso Extraction -->
+                    <div class="criteria-row">
+                        <div class="criteria-info">
+                            <span class="criteria-title"><i class="fa-solid fa-coffee"></i> جودة القهوة واستخلاص الإسبريسو</span>
+                            <span class="criteria-desc">طريقة الاستخلاص، درجة الطحن، تبخير الحليب والرسم (Latte Art)</span>
+                        </div>
+                        <div class="star-rating-input" data-rating-target="qualityRating">
+                            <input type="hidden" id="qualityRating" value="5">
+                            <div class="stars" id="qualityStars">
+                                <i class="fa-solid fa-star active" data-val="1"></i>
+                                <i class="fa-solid fa-star active" data-val="2"></i>
+                                <i class="fa-solid fa-star active" data-val="3"></i>
+                                <i class="fa-solid fa-star active" data-val="4"></i>
+                                <i class="fa-solid fa-star active" data-val="5"></i>
+                            </div>
+                            <span class="rating-num" id="qualityRatingVal">5/5</span>
+                        </div>
+                    </div>
+
+                    <!-- Criteria 2: Speed & Service Efficiency -->
+                    <div class="criteria-row">
+                        <div class="criteria-info">
+                            <span class="criteria-title"><i class="fa-solid fa-stopwatch"></i> السرعة وكفاءة العمل</span>
+                            <span class="criteria-desc">سرعة تحضير الطلبات وإنجازها أثناء ساعات الذروة والضغط</span>
+                        </div>
+                        <div class="star-rating-input" data-rating-target="speedRating">
+                            <input type="hidden" id="speedRating" value="5">
+                            <div class="stars" id="speedStars">
+                                <i class="fa-solid fa-star active" data-val="1"></i>
+                                <i class="fa-solid fa-star active" data-val="2"></i>
+                                <i class="fa-solid fa-star active" data-val="3"></i>
+                                <i class="fa-solid fa-star active" data-val="4"></i>
+                                <i class="fa-solid fa-star active" data-val="5"></i>
+                            </div>
+                            <span class="rating-num" id="speedRatingVal">5/5</span>
+                        </div>
+                    </div>
+
+                    <!-- Criteria 3: Hygiene & Station Cleanliness -->
+                    <div class="criteria-row">
+                        <div class="criteria-info">
+                            <span class="criteria-title"><i class="fa-solid fa-broom"></i> النظافة وترتيب المحطة</span>
+                            <span class="criteria-desc">نظافة ماكينة الإسبريسو، المطاحن، الأدوات والمساحة المحيطة</span>
+                        </div>
+                        <div class="star-rating-input" data-rating-target="cleanlinessRating">
+                            <input type="hidden" id="cleanlinessRating" value="5">
+                            <div class="stars" id="cleanlinessStars">
+                                <i class="fa-solid fa-star active" data-val="1"></i>
+                                <i class="fa-solid fa-star active" data-val="2"></i>
+                                <i class="fa-solid fa-star active" data-val="3"></i>
+                                <i class="fa-solid fa-star active" data-val="4"></i>
+                                <i class="fa-solid fa-star active" data-val="5"></i>
+                            </div>
+                            <span class="rating-num" id="cleanlinessRatingVal">5/5</span>
+                        </div>
+                    </div>
+
+                    <!-- Criteria 4: Teamwork & Communication -->
+                    <div class="criteria-row">
+                        <div class="criteria-info">
+                            <span class="criteria-title"><i class="fa-solid fa-handshake"></i> العمل الجماعي والتواصل</span>
+                            <span class="criteria-desc">المرونة في التعامل مع الزملاء والالتزام بتعليمات مسؤول الشفت</span>
+                        </div>
+                        <div class="star-rating-input" data-rating-target="teamworkRating">
+                            <input type="hidden" id="teamworkRating" value="5">
+                            <div class="stars" id="teamworkStars">
+                                <i class="fa-solid fa-star active" data-val="1"></i>
+                                <i class="fa-solid fa-star active" data-val="2"></i>
+                                <i class="fa-solid fa-star active" data-val="3"></i>
+                                <i class="fa-solid fa-star active" data-val="4"></i>
+                                <i class="fa-solid fa-star active" data-val="5"></i>
+                            </div>
+                            <span class="rating-num" id="teamworkRatingVal">5/5</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label for="evalNotes"><i class="fa-solid fa-comment-dots"></i> ملاحظات وتوجيهات الهيد بار</label>
+                    <textarea id="evalNotes" class="custom-textarea" rows="3" placeholder="أكتب ملاحظاتك وتوجيهاتك للموظف للتحسين والتطوير..."></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('evaluationModal')">إلغاء</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> حفظ التقييم</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: View Employee Details & Past Evaluations History -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content modal-xl">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-user-check"></i> تفاصيل تقييمات الموظف</h2>
+                <button class="modal-close" onclick="closeModal('detailsModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" id="detailsModalBody">
+                <!-- Filled dynamically via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Add New Employee -->
+    <div id="addEmployeeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-user-plus"></i> إضافة موظف جديد لـ Coffee Lab</h2>
+                <button class="modal-close" onclick="closeModal('addEmployeeModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="addEmployeeForm" class="modal-body">
+                <div class="form-group">
+                    <label for="empName"><i class="fa-solid fa-user"></i> اسم الموظف الكامل *</label>
+                    <input type="text" id="empName" class="custom-input" placeholder="مثال: خالد العلي" required>
+                </div>
+                <div class="form-group">
+                    <label for="empRole"><i class="fa-solid fa-award"></i> المسمى الوظيفي *</label>
+                    <select id="empRole" class="custom-select" required>
+                        <option value="Senior Barista">باريستا محترف (Senior Barista)</option>
+                        <option value="Barista">باريستا (Barista)</option>
+                        <option value="Junior Barista">باريستا مبتدئ (Junior Barista)</option>
+                        <option value="Head Barista">مسؤول الباريستا (Head Barista)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="empAvatar"><i class="fa-solid fa-image"></i> رابط صورة الموظف (اختياري)</label>
+                    <input type="url" id="empAvatar" class="custom-input" placeholder="https://images.unsplash.com/...">
+                    <small class="help-text">إذا تركت الحقل فارغاً سيتم توليد صورة رمزية مميزة تلقائياً.</small>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('addEmployeeModal')">إلغاء</button>
+                    <button type="submit" class="btn btn-secondary"><i class="fa-solid fa-check"></i> إضافة الموظف</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Supabase Database Config -->
+    <div id="configModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-database"></i> إعدادات قاعدة بيانات Supabase</h2>
+                <button class="modal-close" onclick="closeModal('configModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <p class="config-intro">
+                    قم بإدخال بيانات مشروعك في Supabase للاتصال وحفظ التقييمات في قاعدة البيانات السحابية الحقيقية:
+                </p>
+                <div class="form-group">
+                    <label for="cfgSupabaseUrl">Supabase Project URL</label>
+                    <input type="text" id="cfgSupabaseUrl" class="custom-input" placeholder="https://xyzxyz.supabase.co">
+                </div>
+                <div class="form-group">
+                    <label for="cfgSupabaseKey">Supabase Anon Key</label>
+                    <input type="password" id="cfgSupabaseKey" class="custom-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6...">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnClearConfig" class="btn btn-outline text-danger">مسح المفاتيح (استخدام الوضع التجريبي)</button>
+                    <button type="button" id="btnSaveConfig" class="btn btn-primary"><i class="fa-solid fa-plug"></i> حفظ والاتصال</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Application JavaScript Files -->
+    <script src="js/supabase-config.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
