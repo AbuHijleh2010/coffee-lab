@@ -177,34 +177,86 @@
                 <button class="modal-close" onclick="closeModal('evaluationModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form id="evaluationForm" class="modal-body" onsubmit="handleEvaluationSubmit(event)">
-                <div class="form-group">
-                    <label for="evalEmployeeSelect"><i class="fa-solid fa-user"></i> اختر الموظف المراد تقييمه *</label>
-                    <select id="evalEmployeeSelect" class="custom-select" required>
-                        <option value="">-- اختر موظف من القائمة --</option>
-                    </select>
+                <!-- Basic Shift & Employee Metadata -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="evalEmployeeSelect"><i class="fa-solid fa-user"></i> الموظف المراد تقييمه *</label>
+                        <select id="evalEmployeeSelect" class="custom-select" required>
+                            <option value="">-- اختر موظف من القائمة --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="evaluatorName"><i class="fa-solid fa-user-shield"></i> اسم الهيد بار (المقيّم) *</label>
+                        <input type="text" id="evaluatorName" class="custom-input" placeholder="مثال: أحمد - Head Barista" required>
+                    </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="evaluatorName"><i class="fa-solid fa-user-shield"></i> اسم المقيّم (مسؤول الباريستا) *</label>
-                        <input type="text" id="evaluatorName" class="custom-input" placeholder="مثال: أحمد - Head Barista" required>
+                        <label for="evaluationDate"><i class="fa-solid fa-calendar-days"></i> تاريخ التقييم *</label>
+                        <input type="date" id="evaluationDate" class="custom-input" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="evaluationDate"><i class="fa-solid fa-calendar-days"></i> تاريخ التقييم *</label>
-                        <input type="date" id="evaluationDate" class="custom-input" required>
+                        <label for="shiftType"><i class="fa-solid fa-clock"></i> نوع الشفت *</label>
+                        <select id="shiftType" class="custom-select" required>
+                            <option value="صباحي">الشفت الصباحي (Morning Shift)</option>
+                            <option value="مسائي">الشفت المسائي (Evening Shift)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Station Selection Toggle -->
+                <div class="form-group highlight-box">
+                    <label for="barStation"><i class="fa-solid fa-mug-saucer"></i> موقع العمل الحالي / محطة البار (Station) *</label>
+                    <select id="barStation" class="custom-select station-select" onchange="renderStationChecklist()" required>
+                        <option value="espresso">☕ بار الإسبريسو (Espresso Machine & Coffee Bar)</option>
+                        <option value="assistant">🥛 مساعد البار (Bar Assistant & Mix Prep Bar)</option>
+                        <option value="cold">🧊 بار المشروبات الباردة (Cold Drinks & Ice Coffee Bar)</option>
+                    </select>
+                </div>
+
+                <!-- Dynamic Station Checklist Container -->
+                <div id="stationChecklistContainer" class="checklist-section">
+                    <!-- Dynamic checkboxes inserted by JS based on selected station -->
+                </div>
+
+                <!-- Practical Recipe Quiz & Knowledge Evaluation -->
+                <div class="criteria-card-box">
+                    <h4><i class="fa-solid fa-clipboard-question"></i> الاختبار الشفهي لمعرفة الريسبي وطريقة التحضير:</h4>
+                    <div class="form-group">
+                        <label for="quizDrinkName"><i class="fa-solid fa-glass-water"></i> المشروب الذي تم سؤال الموظف عنه</label>
+                        <input type="text" id="quizDrinkName" class="custom-input" placeholder="مثال: طريقة تحضير الإسبانيش لاتيه البارد من الصفر">
+                    </div>
+                    
+                    <div class="criteria-row">
+                        <div class="criteria-info">
+                            <span class="criteria-title">تقييم إجابة الموظف ومعرفته بالريسبي والمكونات</span>
+                            <span class="criteria-desc">مدى دقته في شرح الخطوات والمكونات والميزان والمعايير</span>
+                        </div>
+                        <div class="star-rating-input" data-rating-target="quizRating">
+                            <input type="hidden" id="quizRating" value="5">
+                            <div class="stars" id="quizStars">
+                                <i class="fa-solid fa-star active" data-val="1"></i>
+                                <i class="fa-solid fa-star active" data-val="2"></i>
+                                <i class="fa-solid fa-star active" data-val="3"></i>
+                                <i class="fa-solid fa-star active" data-val="4"></i>
+                                <i class="fa-solid fa-star active" data-val="5"></i>
+                            </div>
+                            <span class="rating-num" id="quizRatingVal">5/5</span>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Rating Criteria Inputs -->
                 <div class="rating-criteria-container">
-                    <h3><i class="fa-solid fa-sliders"></i> معايير التقييم التفصيلية (من 1 إلى 5):</h3>
+                    <h3><i class="fa-solid fa-sliders"></i> التقييم الميداني الشامل (من 1 إلى 5):</h3>
                     
-                    <!-- Criteria 1: Coffee Quality & Espresso Extraction -->
                     <div class="criteria-row">
                         <div class="criteria-info">
-                            <span class="criteria-title"><i class="fa-solid fa-coffee"></i> جودة القهوة واستخلاص الإسبريسو</span>
-                            <span class="criteria-desc">طريقة الاستخلاص، درجة الطحن، تبخير الحليب والرسم (Latte Art)</span>
+                            <span class="criteria-title"><i class="fa-solid fa-coffee"></i> الجودة والاستخلاص والتبخير</span>
+                            <span class="criteria-desc">درجة الطحن، الاستخلاص الصحيح، درجة حرارة التبخير والرسم</span>
                         </div>
                         <div class="star-rating-input" data-rating-target="qualityRating">
                             <input type="hidden" id="qualityRating" value="5">
@@ -219,11 +271,10 @@
                         </div>
                     </div>
 
-                    <!-- Criteria 2: Speed & Service Efficiency -->
                     <div class="criteria-row">
                         <div class="criteria-info">
-                            <span class="criteria-title"><i class="fa-solid fa-stopwatch"></i> السرعة وكفاءة العمل</span>
-                            <span class="criteria-desc">سرعة تحضير الطلبات وإنجازها أثناء ساعات الذروة والضغط</span>
+                            <span class="criteria-title"><i class="fa-solid fa-stopwatch"></i> السرعة والالتزام بالريسبي والميزان</span>
+                            <span class="criteria-desc">استخدام الميزان والشيقر والسرعة في تحضير الطلبات</span>
                         </div>
                         <div class="star-rating-input" data-rating-target="speedRating">
                             <input type="hidden" id="speedRating" value="5">
@@ -238,11 +289,10 @@
                         </div>
                     </div>
 
-                    <!-- Criteria 3: Hygiene & Station Cleanliness -->
                     <div class="criteria-row">
                         <div class="criteria-info">
-                            <span class="criteria-title"><i class="fa-solid fa-broom"></i> النظافة وترتيب المحطة</span>
-                            <span class="criteria-desc">نظافة ماكينة الإسبريسو، المطاحن، الأدوات والمساحة المحيطة</span>
+                            <span class="criteria-title"><i class="fa-solid fa-broom"></i> نظافة البار والالتزام بتواريخ الفتح FIFO</span>
+                            <span class="criteria-desc">نظافة الأجهزة والثلاجات وتوثيق تاريخ الفتح على الحليب النباتي والخلطات</span>
                         </div>
                         <div class="star-rating-input" data-rating-target="cleanlinessRating">
                             <input type="hidden" id="cleanlinessRating" value="5">
@@ -257,11 +307,10 @@
                         </div>
                     </div>
 
-                    <!-- Criteria 4: Teamwork & Communication -->
                     <div class="criteria-row">
                         <div class="criteria-info">
-                            <span class="criteria-title"><i class="fa-solid fa-handshake"></i> العمل الجماعي والتواصل</span>
-                            <span class="criteria-desc">المرونة في التعامل مع الزملاء والالتزام بتعليمات مسؤول الشفت</span>
+                            <span class="criteria-title"><i class="fa-solid fa-handshake"></i> الانضباط والعمل الجماعي</span>
+                            <span class="criteria-desc">الالتزام بتوجيهات الهيد بار والتعاون مع فريق الشفت</span>
                         </div>
                         <div class="star-rating-input" data-rating-target="teamworkRating">
                             <input type="hidden" id="teamworkRating" value="5">
@@ -275,17 +324,22 @@
                             <span class="rating-num" id="teamworkRatingVal">5/5</span>
                         </div>
                     </div>
+                </div>
 
+                <!-- Incident & Mistake Log (Open Field) -->
+                <div class="form-group highlight-danger-box">
+                    <label for="evalMistakes"><i class="fa-solid fa-triangle-exclamation"></i> سجل الأخطاء والملاحظات الميدانية (غير محدود)</label>
+                    <textarea id="evalMistakes" class="custom-textarea" rows="3" placeholder="أكتب أي خطأ لاحظته أثناء الشفت (مثال: غلط بكاسة كابتشينو، لم يسجل تاريخ فتح الحليب النباتي، لم ينظف الستيم بعد التبخير...)"></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="evalNotes"><i class="fa-solid fa-comment-dots"></i> ملاحظات وتوجيهات الهيد بار</label>
-                    <textarea id="evalNotes" class="custom-textarea" rows="3" placeholder="أكتب ملاحظاتك وتوجيهاتك للموظف للتحسين والتطوير..."></textarea>
+                    <label for="evalNotes"><i class="fa-solid fa-comment-dots"></i> توجيهات وملاحظات الهيد بار للتحسين والتطوير</label>
+                    <textarea id="evalNotes" class="custom-textarea" rows="2" placeholder="توجيهك المباشر للموظف لتفادي الخطأ وتطوير الأداء..."></textarea>
                 </div>
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline" onclick="closeModal('evaluationModal')">إلغاء</button>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> حفظ التقييم</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> حفظ تقرير التقييم</button>
                 </div>
             </form>
         </div>

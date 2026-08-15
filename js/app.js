@@ -281,6 +281,68 @@ async function handleDeleteAllPrompt() {
 /**
  * Open Head Barista Evaluation Modal
  */
+// Head Barista Dynamic Checklists Data Structure
+const STATION_CHECKLISTS = {
+    espresso: {
+        title: '☕ بار الإسبريسو (Espresso Machine & Coffee Bar)',
+        items: [
+            { id: 'chk_dose', text: 'الجرعة واستخلاص الإسبريسو صحيحة ومعايرة الشوت بدقة' },
+            { id: 'chk_clean_machine', text: 'نظافة ماكينة الإسبريسو، البورتافلتر، الستيم والشوتات' },
+            { id: 'chk_milk_fifo', text: 'ترتيب الحليب حسب التاريخ (FIFO) وتوثيق تاريخ فتح الحليب النباتي' },
+            { id: 'chk_fridge_under', text: 'نظافة وترتيب ثلاجة الحليب السفلية الخاصة بالماكينة' },
+            { id: 'chk_coffee_validity', text: 'صلاحية القهوة ونظافة طاحونة الإسبريسو' }
+        ]
+    },
+    assistant: {
+        title: '🥛 مساعد البار (Bar Assistant & Mix Prep Bar)',
+        items: [
+            { id: 'chk_pitchers', text: 'نظافة البتشرات وترتيب السيربات والبودرات بالبار' },
+            { id: 'chk_prep_machines', text: 'تجهيز ونظافة مواكن المشروبات (آيس تي، سبانش، آيس فانيلا، ميس فلورا)' },
+            { id: 'chk_recipe_scale', text: 'الالتزام الكامل بالريسبي والمعايير واستخدام الميزان والشيقر بالشكل الصحيح' },
+            { id: 'chk_clean_prep', text: 'نظافة وترتيب بار المساعد والتجهيز المسبق للخلطات' }
+        ]
+    },
+    cold: {
+        title: '🧊 بار المشروبات الباردة (Cold Drinks & Ice Coffee Bar)',
+        items: [
+            { id: 'chk_icecoffee_mac', text: 'جاهزية ونظافة ماكينات الآيس كوفي (الدايت + العادي)' },
+            { id: 'chk_cold_fridge', text: 'ترتيب ونظافة ثلاجة الفروزن، البوظة، السيربات والدرزلات' },
+            { id: 'chk_cold_mixes_fifo', text: 'ترتيب خلطات البارد حسب التواريخ (FIFO) وتجهيز المكونات' },
+            { id: 'chk_small_fridge', text: 'نظافة وترتيب الثلاجة الصغيرة (حليب، خلطات، XL، صودا وتواريخ الفتح)' }
+        ]
+    }
+};
+
+/**
+ * Render Dynamic Station Checklist based on selected station dropdown
+ */
+function renderStationChecklist() {
+    const stationSelect = document.getElementById('barStation');
+    const container = document.getElementById('stationChecklistContainer');
+    if (!stationSelect || !container) return;
+
+    const stationKey = stationSelect.value || 'espresso';
+    const config = STATION_CHECKLISTS[stationKey];
+    if (!config) return;
+
+    container.innerHTML = `
+        <div class="checklist-card">
+            <h4><i class="fa-solid fa-list-check"></i> ${config.title} - نقاط الفحص والتدقيق:</h4>
+            <div class="checklist-grid">
+                ${config.items.map(item => `
+                    <label class="checklist-item">
+                        <input type="checkbox" id="${item.id}" checked>
+                        <span>${item.text}</span>
+                    </label>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Open Head Barista Evaluation Modal
+ */
 function openEvaluationModal(selectedEmployeeId = null) {
     if (selectedEmployeeId) {
         document.getElementById('evalEmployeeSelect').value = selectedEmployeeId;
@@ -288,6 +350,7 @@ function openEvaluationModal(selectedEmployeeId = null) {
         document.getElementById('evalEmployeeSelect').value = '';
     }
     
+    renderStationChecklist();
     openModal('evaluationModal');
 }
 
@@ -300,10 +363,18 @@ async function handleEvaluationSubmit(e) {
     const employee_id = document.getElementById('evalEmployeeSelect').value;
     const evaluator_name = document.getElementById('evaluatorName').value.trim();
     const evaluation_date = document.getElementById('evaluationDate').value;
-    const quality_rating = parseInt(document.getElementById('qualityRating').value);
-    const speed_rating = parseInt(document.getElementById('speedRating').value);
-    const cleanliness_rating = parseInt(document.getElementById('cleanlinessRating').value);
-    const teamwork_rating = parseInt(document.getElementById('teamworkRating').value);
+    const shift_type = document.getElementById('shiftType').value;
+    const bar_station = document.getElementById('barStation').value;
+
+    const quiz_drink_name = document.getElementById('quizDrinkName').value.trim();
+    const quiz_rating = parseInt(document.getElementById('quizRating').value || '5');
+
+    const quality_rating = parseInt(document.getElementById('qualityRating').value || '5');
+    const speed_rating = parseInt(document.getElementById('speedRating').value || '5');
+    const cleanliness_rating = parseInt(document.getElementById('cleanlinessRating').value || '5');
+    const teamwork_rating = parseInt(document.getElementById('teamworkRating').value || '5');
+
+    const evalMistakes = document.getElementById('evalMistakes').value.trim();
     const notes = document.getElementById('evalNotes').value.trim();
 
     if (!employee_id) {
@@ -311,24 +382,43 @@ async function handleEvaluationSubmit(e) {
         return;
     }
 
-    // Calculate Overall Rating average of the 4 criteria
-    const avgScore = ((quality_rating + speed_rating + cleanliness_rating + teamwork_rating) / 4).toFixed(2);
+    // Collect checklist items status
+    const currentStationConfig = STATION_CHECKLISTS[bar_station];
+    const checklist_results = [];
+    if (currentStationConfig) {
+        currentStationConfig.items.forEach(item => {
+            const chk = document.getElementById(item.id);
+            checklist_results.push({
+                text: item.text,
+                passed: chk ? chk.checked : false
+            });
+        });
+    }
+
+    // Calculate Overall Rating average of 4 criteria + quiz
+    const avgScore = ((quality_rating + speed_rating + cleanliness_rating + teamwork_rating + quiz_rating) / 5).toFixed(2);
 
     const evalPayload = {
         employee_id,
         evaluator_name,
         evaluation_date,
+        shift_type,
+        bar_station,
+        quiz_drink_name,
+        quiz_rating,
         quality_rating,
         speed_rating,
         cleanliness_rating,
         teamwork_rating,
         rating: parseFloat(avgScore),
+        checklist_results,
+        evalMistakes,
         notes
     };
 
     try {
         await createEvaluation(evalPayload);
-        showToast('تم حفظ التقييم بنجاح!', 'success');
+        showToast('تم حفظ تقرير التقييم بنجاح!', 'success');
         closeModal('evaluationModal');
         document.getElementById('evaluationForm').reset();
         await refreshAppData();
@@ -398,24 +488,67 @@ function openDetailsModal(empId) {
             </div>
         `;
     } else {
-        evaluationsHtml = empEvals.map(ev => `
-            <div class="history-item">
-                <div class="history-header">
-                    <span class="evaluator"><i class="fa-solid fa-user-shield"></i> المقيّم: ${ev.evaluator_name || 'مسؤول الباريستا'}</span>
-                    <span class="date"><i class="fa-solid fa-calendar"></i> تاريخ التقييم: ${ev.evaluation_date}</span>
+        evaluationsHtml = empEvals.map(ev => {
+            const stationTitle = ev.bar_station === 'espresso' ? '☕ بار الإسبريسو' :
+                                 ev.bar_station === 'assistant' ? '🥛 مساعد البار' : '🧊 بار المشروبات الباردة';
+            return `
+                <div class="history-item">
+                    <div class="history-header">
+                        <span class="evaluator"><i class="fa-solid fa-user-shield"></i> الهيد بار: ${ev.evaluator_name || 'مسؤول الباريستا'}</span>
+                        <span class="date"><i class="fa-solid fa-calendar"></i> ${ev.evaluation_date} (${ev.shift_type || 'شفت عالي'})</span>
+                    </div>
+
+                    <div class="station-badge-tag">
+                        <i class="fa-solid fa-mug-saucer"></i> ${stationTitle}
+                    </div>
+
+                    ${ev.quiz_drink_name ? `
+                        <div class="quiz-box">
+                            <div><strong><i class="fa-solid fa-clipboard-question"></i> اختبار الريسبي الشفهي:</strong> ${ev.quiz_drink_name}</div>
+                            <div><strong>الدرجة:</strong> ${ev.quiz_rating || 5}/5 ★</div>
+                        </div>
+                    ` : ''}
+
+                    <div class="history-scores-grid" style="margin-top: 0.75rem;">
+                        <div><strong>الجودة والاستخلاص:</strong> ${ev.quality_rating || 5}/5 ★</div>
+                        <div><strong>السرعة والميزان:</strong> ${ev.speed_rating || 5}/5 ★</div>
+                        <div><strong>النظافة والـ FIFO:</strong> ${ev.cleanliness_rating || 5}/5 ★</div>
+                        <div><strong>الانضباط والفريق:</strong> ${ev.teamwork_rating || 5}/5 ★</div>
+                    </div>
+
+                    ${ev.checklist_results && ev.checklist_results.length > 0 ? `
+                        <div class="checklist-summary-box">
+                            <strong style="color: var(--primary-gold);"><i class="fa-solid fa-list-check"></i> نتائج نقاط الفحص والتجهيز:</strong>
+                            <ul class="checklist-bullets">
+                                ${ev.checklist_results.map(c => `
+                                    <li class="${c.passed ? 'text-success' : 'text-danger'}">
+                                        <i class="${c.passed ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark'}"></i> ${c.text}
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+
+                    ${ev.evalMistakes ? `
+                        <div class="mistakes-box">
+                            <strong><i class="fa-solid fa-triangle-exclamation"></i> سجل الأخطاء والملاحظات الميدانية:</strong>
+                            <p style="margin-top: 0.25rem;">${ev.evalMistakes}</p>
+                        </div>
+                    ` : ''}
+
+                    ${ev.notes ? `
+                        <div class="notes-box">
+                            <strong><i class="fa-solid fa-comment-dots"></i> توجيهات الهيد بار للتحسين:</strong>
+                            <p style="margin-top: 0.25rem; font-style: italic;">"${ev.notes}"</p>
+                        </div>
+                    ` : ''}
+
+                    <div style="font-size: 0.92rem; color: var(--accent-gold); margin-top: 0.85rem; font-weight: 700; text-align: left;">
+                        معدل الجلسة الإجمالي: ${ev.rating} / 5.0 ★
+                    </div>
                 </div>
-                <div class="history-scores-grid">
-                    <div><strong>جودة القهوة:</strong> ${ev.quality_rating || 5}/5 ★</div>
-                    <div><strong>السرعة والكفاءة:</strong> ${ev.speed_rating || 5}/5 ★</div>
-                    <div><strong>النظافة:</strong> ${ev.cleanliness_rating || 5}/5 ★</div>
-                    <div><strong>العمل الجماعي:</strong> ${ev.teamwork_rating || 5}/5 ★</div>
-                </div>
-                <div style="font-size: 0.9rem; color: var(--accent-gold); margin-bottom: 0.4rem;">
-                    <strong>التقييم الإجمالي لهذه الجلسة:</strong> ${ev.rating} / 5.0
-                </div>
-                ${ev.notes ? `<div style="font-size: 0.88rem; color: var(--text-muted); font-style: italic; background: rgba(0,0,0,0.2); padding: 0.5rem 0.75rem; border-radius: 6px;"><i class="fa-solid fa-quote-right"></i> "${ev.notes}"</div>` : ''}
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     modalBody.innerHTML = `
@@ -433,7 +566,7 @@ function openDetailsModal(empId) {
 
         <div style="margin-top: 1.5rem;">
             <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--primary-light); margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
-                <i class="fa-solid fa-clock-rotate-left"></i> سجل التقييمات التاريخي (${evalCount})
+                <i class="fa-solid fa-clock-rotate-left"></i> سجل التقييمات والتقارير التفصيلية (${evalCount})
             </h4>
             <div class="history-timeline">
                 ${evaluationsHtml}

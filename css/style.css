@@ -890,3 +890,162 @@ body {
         align-items: flex-start;
     }
 }
+
+/* Head Barista Dynamic Checklists & Station Evaluation Styles */
+.highlight-box {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+}
+
+.highlight-danger-box {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+}
+
+.checklist-section {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.checklist-card {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+}
+
+.checklist-card h4 {
+    font-size: 0.95rem;
+    color: var(--primary-gold);
+    margin-bottom: 1rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.checklist-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.65rem 0.85rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    font-size: 0.88rem;
+    color: #e2e8f0;
+}
+
+.checklist-item:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(245, 158, 11, 0.4);
+}
+
+.checklist-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #f59e0b;
+    cursor: pointer;
+}
+
+.criteria-card-box {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    margin-top: 0.5rem;
+}
+
+.criteria-card-box h4 {
+    font-size: 0.95rem;
+    color: #38bdf8;
+    margin-bottom: 0.85rem;
+    font-weight: 700;
+}
+
+.station-badge-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.75rem;
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+}
+
+.mistakes-box {
+    background: rgba(239, 68, 68, 0.1);
+    border-right: 3px solid #ef4444;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-top: 0.75rem;
+    font-size: 0.88rem;
+    color: #fca5a5;
+}
+
+.quiz-box {
+    background: rgba(56, 189, 248, 0.1);
+    border-right: 3px solid #38bdf8;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-top: 0.5rem;
+    font-size: 0.88rem;
+    color: #bae6fd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.notes-box {
+    background: rgba(0, 0, 0, 0.25);
+    border-right: 3px solid #f59e0b;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-top: 0.75rem;
+    font-size: 0.88rem;
+    color: #e2e8f0;
+}
+
+.checklist-summary-box {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+}
+
+.checklist-bullets {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.checklist-bullets li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.text-success { color: #10b981; }
+.text-danger { color: #ef4444; }
