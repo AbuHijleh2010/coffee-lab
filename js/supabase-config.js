@@ -173,6 +173,52 @@ async function createEvaluation(evalData) {
 }
 
 /**
+ * Update an existing evaluation
+ */
+async function updateEvaluation(evalId, evalData) {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS);
+        if (raw) {
+            let evals = JSON.parse(raw);
+            const index = evals.findIndex(ev => ev.id === evalId);
+            if (index !== -1) {
+                evals[index] = { ...evals[index], ...evalData };
+                localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(evals));
+            }
+        }
+    } catch (e) {
+        console.error('Error updating evaluation in localStorage:', e);
+    }
+
+    if (isSupabaseConnected()) {
+        withTimeout(supabaseClient.from('evaluations').update(evalData).eq('id', evalId), 1000).catch(() => {});
+    }
+
+    return true;
+}
+
+/**
+ * Delete a single evaluation permanently
+ */
+async function deleteSingleEvaluation(evalId) {
+    try {
+        const rawEvals = localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS);
+        if (rawEvals) {
+            const evals = JSON.parse(rawEvals).filter(ev => ev.id !== evalId);
+            localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(evals));
+        }
+    } catch (e) {
+        console.error('Error deleting single evaluation:', e);
+    }
+
+    if (isSupabaseConnected()) {
+        withTimeout(supabaseClient.from('evaluations').delete().eq('id', evalId), 1000).catch(() => {});
+    }
+
+    return true;
+}
+
+/**
  * Delete all employees and evaluations permanently
  */
 async function deleteAllEmployees() {

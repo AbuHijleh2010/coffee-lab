@@ -427,21 +427,66 @@ function renderStationChecklist() {
 }
 
 /**
- * Open Head Barista Evaluation Modal
+ * Open Head Barista Evaluation Modal (Create or Edit)
  */
-function openEvaluationModal(selectedEmployeeId = null) {
-    if (selectedEmployeeId) {
-        document.getElementById('evalEmployeeSelect').value = selectedEmployeeId;
+function openEvaluationModal(selectedEmployeeId = null, evalToEdit = null) {
+    const modalTitle = document.getElementById('evalModalTitle');
+    
+    if (evalToEdit) {
+        state.editingEvalId = evalToEdit.id;
+        if (modalTitle) modalTitle.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> تعديل تقرير تقييم الموظف';
+
+        document.getElementById('evalEmployeeSelect').value = evalToEdit.employee_id;
+        document.getElementById('evaluatorName').value = evalToEdit.evaluator_name || state.currentAdmin || '';
+        document.getElementById('evaluationDate').value = evalToEdit.evaluation_date;
+        document.getElementById('shiftType').value = evalToEdit.shift_type || 'صباحي';
+        document.getElementById('barStation').value = evalToEdit.bar_station || 'espresso';
+
+        document.getElementById('quizDrinkName').value = evalToEdit.quiz_drink_name || '';
+        document.getElementById('quizRating').value = evalToEdit.quiz_rating || 5;
+
+        document.getElementById('qualityRating').value = evalToEdit.quality_rating || 5;
+        document.getElementById('speedRating').value = evalToEdit.speed_rating || 5;
+        document.getElementById('cleanlinessRating').value = evalToEdit.cleanliness_rating || 5;
+        document.getElementById('teamworkRating').value = evalToEdit.teamwork_rating || 5;
+
+        document.getElementById('evalMistakes').value = evalToEdit.evalMistakes || '';
+        document.getElementById('evalNotes').value = evalToEdit.notes || '';
+
+        renderStationChecklist();
+
+        // Restore checklist states
+        if (evalToEdit.checklist_results && Array.isArray(evalToEdit.checklist_results)) {
+            const currentStationConfig = STATION_CHECKLISTS[evalToEdit.bar_station || 'espresso'];
+            if (currentStationConfig) {
+                currentStationConfig.items.forEach((item, index) => {
+                    const chk = document.getElementById(item.id);
+                    if (chk && evalToEdit.checklist_results[index]) {
+                        chk.checked = evalToEdit.checklist_results[index].passed;
+                    }
+                });
+            }
+        }
     } else {
-        document.getElementById('evalEmployeeSelect').value = '';
+        state.editingEvalId = null;
+        if (modalTitle) modalTitle.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> نموذج تقييم موظف (الهيد بار / المسؤول)';
+        
+        document.getElementById('evaluationForm').reset();
+        if (selectedEmployeeId) {
+            document.getElementById('evalEmployeeSelect').value = selectedEmployeeId;
+        } else {
+            document.getElementById('evalEmployeeSelect').value = '';
+        }
+        document.getElementById('evaluatorName').value = state.currentAdmin || '';
+        document.getElementById('evaluationDate').value = new Date().toISOString().split('T')[0];
+        renderStationChecklist();
     }
     
-    renderStationChecklist();
     openModal('evaluationModal');
 }
 
 /**
- * Handle New Evaluation Form Submission
+ * Handle Evaluation Form Submission (Create or Edit)
  */
 async function handleEvaluationSubmit(e) {
     e.preventDefault();
@@ -503,14 +548,47 @@ async function handleEvaluationSubmit(e) {
     };
 
     try {
-        await createEvaluation(evalPayload);
-        showToast('تم حفظ تقرير التقييم بنجاح!', 'success');
+        if (state.editingEvalId) {
+            await updateEvaluation(state.editingEvalId, evalPayload);
+            showToast('تم تعديل التقييم بنجاح!', 'success');
+            state.editingEvalId = null;
+        } else {
+            await createEvaluation(evalPayload);
+            showToast('تم حفظ تقرير التقييم بنجاح!', 'success');
+        }
         closeModal('evaluationModal');
         document.getElementById('evaluationForm').reset();
         await refreshAppData();
     } catch (err) {
         showToast('حدث خطأ أثناء حفظ التقييم', 'danger');
     }
+}
+
+/**
+ * Handle Single Evaluation Deletion Prompt
+ */
+async function handleDeleteSingleEvalPrompt(evalId, empId) {
+    requireAdminAuth(async () => {
+        if (confirm('هل أنت تأكد من حذف هذا التقييم المحدد نهائياً؟')) {
+            await deleteSingleEvaluation(evalId);
+            showToast('تم حذف التقييم بنجاح', 'warning');
+            await refreshAppData();
+            openDetailsModal(empId);
+        }
+    });
+}
+
+/**
+ * Handle Single Evaluation Edit Prompt
+ */
+function handleEditSingleEvalPrompt(evalId) {
+    requireAdminAuth(() => {
+        const ev = state.evaluations.find(item => item.id === evalId);
+        if (ev) {
+            closeModal('detailsModal');
+            openEvaluationModal(ev.employee_id, ev);
+        }
+    });
 }
 
 /**
@@ -580,8 +658,18 @@ function openDetailsModal(empId) {
             return `
                 <div class="history-item">
                     <div class="history-header">
-                        <span class="evaluator"><i class="fa-solid fa-user-shield"></i> الهيد بار: ${ev.evaluator_name || 'مسؤول الباريستا'}</span>
-                        <span class="date"><i class="fa-solid fa-calendar"></i> ${ev.evaluation_date} (${ev.shift_type || 'شفت عالي'})</span>
+                        <div>
+                            <span class="evaluator"><i class="fa-solid fa-user-shield"></i> الهيد بار: ${ev.evaluator_name || 'مسؤول الباريستا'}</span>
+                            <span class="date" style="margin-right: 0.75rem;"><i class="fa-solid fa-calendar"></i> ${ev.evaluation_date} (${ev.shift_type || 'شفت عالي'})</span>
+                        </div>
+                        <div style="display: flex; gap: 0.4rem;">
+                            <button type="button" class="btn btn-secondary btn-xs" onclick="handleEditSingleEvalPrompt('${ev.id}')" title="تعديل هذا التقييم">
+                                <i class="fa-solid fa-pen-to-square"></i> تعديل
+                            </button>
+                            <button type="button" class="btn btn-danger-icon btn-xs" onclick="handleDeleteSingleEvalPrompt('${ev.id}', '${empId}')" title="حذف هذا التقييم">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="station-badge-tag">
