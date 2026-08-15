@@ -154,15 +154,14 @@ async function createEmployee(employeeData) {
                 .insert([employeeData])
                 .select();
             if (error) throw error;
-            return data[0];
+            if (data && data.length > 0) return data[0];
         } catch (e) {
-            console.error('Supabase error creating employee:', e);
-            throw e;
+            console.warn('Supabase error creating employee, saving locally fallback:', e);
         }
     }
 
     // Local fallback
-    const current = JSON.parse(localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES) || '[]');
+    const current = JSON.parse(localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES) || JSON.stringify(INITIAL_DEMO_EMPLOYEES));
     const newEmp = {
         id: 'emp_' + Date.now(),
         ...employeeData,
@@ -184,9 +183,9 @@ async function fetchEvaluations() {
                 .select('*')
                 .order('evaluation_date', { ascending: false });
             if (error) throw error;
-            return data;
+            if (data) return data;
         } catch (e) {
-            console.error('Supabase error fetching evaluations:', e);
+            console.warn('Supabase error fetching evaluations, falling back to local storage:', e);
         }
     }
 
@@ -206,15 +205,14 @@ async function createEvaluation(evalData) {
                 .insert([evalData])
                 .select();
             if (error) throw error;
-            return data[0];
+            if (data && data.length > 0) return data[0];
         } catch (e) {
-            console.error('Supabase error creating evaluation:', e);
-            throw e;
+            console.warn('Supabase error creating evaluation, saving locally fallback:', e);
         }
     }
 
     // Local fallback
-    const current = JSON.parse(localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS) || '[]');
+    const current = JSON.parse(localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS) || JSON.stringify(INITIAL_DEMO_EVALUATIONS));
     const newEval = {
         id: 'eval_' + Date.now(),
         ...evalData,
