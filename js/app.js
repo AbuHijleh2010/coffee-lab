@@ -75,7 +75,7 @@ function requireAdminAuth(callbackAction) {
         callbackAction();
     } else {
         state.pendingAction = callbackAction;
-        showToast('يرجى تسجيل دخول الهيد بار (رمز 1234) أولاً للقيام بهذا الإجراء', 'warning');
+        showToast('يرجى تسجيل دخول الهيد بار أولاً للقيام بهذا الإجراء', 'warning');
         openLoginModal();
     }
 }
@@ -91,8 +91,8 @@ function handleLoginSubmit(e) {
         return;
     }
 
-    if (pin !== '1234' && pin !== 'coffeelab2026') {
-        showToast('رمز الدخول السري غير صحيح! (الرمز الافتراضي: 1234)', 'danger');
+    if (pin !== 'lab123') {
+        showToast('كلمة المرور السرية غير صحيحة!', 'danger');
         return;
     }
 
