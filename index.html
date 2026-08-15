@@ -61,15 +61,19 @@
             </div>
 
             <nav class="nav-actions">
-                <button id="addEmployeeBtn" class="btn btn-secondary" onclick="openModal('addEmployeeModal')">
+                <div id="authStatusWidget">
+                    <!-- Dynamic auth state button rendered by JS -->
+                </div>
+
+                <button id="addEmployeeBtn" class="btn btn-secondary" onclick="requireAdminAuth(() => openModal('addEmployeeModal'))">
                     <i class="fa-solid fa-user-plus"></i>
                     <span>إضافة موظف</span>
                 </button>
-                <button id="newEvaluationBtn" class="btn btn-primary" onclick="openEvaluationModal()">
+                <button id="newEvaluationBtn" class="btn btn-primary" onclick="requireAdminAuth(() => openEvaluationModal())">
                     <i class="fa-solid fa-star"></i>
                     <span>تقييم جديد (الهيد بار)</span>
                 </button>
-                <button class="btn btn-danger-icon" title="مسح جميع الموظفين والبدء بصفحة نظيفة" onclick="handleDeleteAllPrompt()">
+                <button id="deleteAllBtn" class="btn btn-danger-icon" title="مسح جميع الموظفين والبدء بصفحة نظيفة" onclick="requireAdminAuth(() => handleDeleteAllPrompt())">
                     <i class="fa-solid fa-trash-sweep"></i>
                 </button>
             </nav>
@@ -168,6 +172,33 @@
             </div>
         </section>
     </main>
+
+    <!-- Modal: Head Barista Login -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-shield-halved"></i> تسجيل دخول مسؤول الفرع (الهيد بار)</h2>
+                <button class="modal-close" onclick="closeModal('loginModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="loginForm" class="modal-body" onsubmit="handleLoginSubmit(event)">
+                <div class="form-group">
+                    <label for="adminUsername"><i class="fa-solid fa-user"></i> اسم المستخدم / الهيد بار *</label>
+                    <input type="text" id="adminUsername" class="custom-input" placeholder="اسمك (مثال: أحمد - Head Barista)" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="adminPin"><i class="fa-solid fa-key"></i> رمز الدخول السري (PIN / Password) *</label>
+                    <input type="password" id="adminPin" class="custom-input" placeholder="أدخل رمز الدخول (الافتراضي: 1234)" required>
+                    <span class="help-text">رمز الدخول الافتراضي للهيد بار: <strong style="color: var(--primary-gold);">1234</strong></span>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('loginModal')">إلغاء</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Modal: Head Barista Evaluation Form -->
     <div id="evaluationModal" class="modal">
@@ -423,7 +454,7 @@
     <div id="toastContainer" class="toast-container"></div>
 
     <!-- Application JavaScript Files -->
-    <script src="js/supabase-config.js?v=1.0.5"></script>
-    <script src="js/app.js?v=1.0.5"></script>
+    <script src="js/supabase-config.js?v=1.0.6"></script>
+    <script src="js/app.js?v=1.0.6"></script>
 </body>
 </html>

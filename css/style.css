@@ -1049,3 +1049,28 @@ body {
 
 .text-success { color: #10b981; }
 .text-danger { color: #ef4444; }
+
+/* Admin Auth Badge & Buttons */
+.admin-logged-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    padding: 0.35rem 0.85rem;
+    border-radius: 20px;
+    backdrop-filter: blur(8px);
+}
+
+.badge-admin-name {
+    font-size: 0.85rem;
+    color: #f59e0b;
+    font-weight: 700;
+}
+
+.btn-xs {
+    padding: 0.25rem 0.55rem;
+    font-size: 0.75rem;
+    border-radius: 6px;
+    height: auto;
+}

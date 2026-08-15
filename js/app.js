@@ -6,7 +6,9 @@ let state = {
     employees: [],
     evaluations: [],
     filterSearch: '',
-    filterRole: 'all'
+    filterRole: 'all',
+    currentAdmin: sessionStorage.getItem('coffeelab_admin_user') || null,
+    pendingAction: null
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -21,15 +23,99 @@ document.addEventListener('DOMContentLoaded', async () => {
             dateInput.value = new Date().toISOString().split('T')[0];
         }
 
-        // 3. Register Event Listeners
+        // 3. Update Auth Widget Status
+        updateAuthUI();
+
+        // 4. Register Event Listeners
         setupEventListeners();
     } catch (err) {
         console.warn('Initialization warning:', err);
     }
 
-    // 4. Load Data & Render (Guaranteed Execution)
+    // 5. Load Data & Render (Guaranteed Execution)
     await refreshAppData();
 });
+
+/**
+ * Head Barista / Admin Auth Controller
+ */
+function updateAuthUI() {
+    const container = document.getElementById('authStatusWidget');
+    if (!container) return;
+
+    if (state.currentAdmin) {
+        container.innerHTML = `
+            <div class="admin-logged-badge">
+                <span class="badge-admin-name"><i class="fa-solid fa-user-check"></i> الهيد بار: <strong>${state.currentAdmin}</strong></span>
+                <button type="button" class="btn btn-outline btn-xs" onclick="handleLogout()" title="تسجيل الخروج">
+                    <i class="fa-solid fa-right-from-bracket"></i> خروج
+                </button>
+            </div>
+        `;
+        const evalInput = document.getElementById('evaluatorName');
+        if (evalInput && !evalInput.value) {
+            evalInput.value = state.currentAdmin;
+        }
+    } else {
+        container.innerHTML = `
+            <button class="btn btn-outline" onclick="openLoginModal()">
+                <i class="fa-solid fa-user-lock"></i>
+                <span>دخول الهيد بار (المسؤول)</span>
+            </button>
+        `;
+    }
+}
+
+function openLoginModal() {
+    openModal('loginModal');
+}
+
+function requireAdminAuth(callbackAction) {
+    if (state.currentAdmin) {
+        callbackAction();
+    } else {
+        state.pendingAction = callbackAction;
+        showToast('يرجى تسجيل دخول الهيد بار (رمز 1234) أولاً للقيام بهذا الإجراء', 'warning');
+        openLoginModal();
+    }
+}
+
+function handleLoginSubmit(e) {
+    e.preventDefault();
+
+    const username = document.getElementById('adminUsername').value.trim();
+    const pin = document.getElementById('adminPin').value.trim();
+
+    if (!username) {
+        showToast('يرجى كتابة اسم المستخدم أو الهيد بار', 'warning');
+        return;
+    }
+
+    if (pin !== '1234' && pin !== 'coffeelab2026') {
+        showToast('رمز الدخول السري غير صحيح! (الرمز الافتراضي: 1234)', 'danger');
+        return;
+    }
+
+    state.currentAdmin = username;
+    sessionStorage.setItem('coffeelab_admin_user', username);
+    showToast(`أهلاً بك ${username}! تم تسجيل دخول الهيد بار بنجاح.`, 'success');
+    closeModal('loginModal');
+    document.getElementById('loginForm').reset();
+    updateAuthUI();
+
+    if (typeof state.pendingAction === 'function') {
+        const action = state.pendingAction;
+        state.pendingAction = null;
+        action();
+    }
+}
+
+function handleLogout() {
+    state.currentAdmin = null;
+    sessionStorage.removeItem('coffeelab_admin_user');
+    showToast('تم تسجيل الخروج من حساب الهيد بار بنجاح', 'warning');
+    updateAuthUI();
+}
 
 /**
  * Setup Event Listeners
@@ -243,10 +329,10 @@ function renderEmployeesGrid() {
                 <button class="btn btn-secondary btn-sm" onclick="openDetailsModal('${emp.id}')">
                     <i class="fa-solid fa-eye"></i> عرض السجل
                 </button>
-                <button class="btn btn-primary btn-sm" onclick="openEvaluationModal('${emp.id}')">
+                <button class="btn btn-primary btn-sm" onclick="requireAdminAuth(() => openEvaluationModal('${emp.id}'))">
                     <i class="fa-solid fa-pen"></i> تقييم
                 </button>
-                <button class="btn btn-danger-icon btn-sm" title="حذف الموظف" onclick="handleDeleteEmployeePrompt('${emp.id}', '${emp.name.replace(/'/g, "\\'")}')">
+                <button class="btn btn-danger-icon btn-sm" title="حذف الموظف" onclick="requireAdminAuth(() => handleDeleteEmployeePrompt('${emp.id}', '${emp.name.replace(/'/g, "\\'")}'))">
                     <i class="fa-solid fa-trash-can"></i>
                 </button>
             </div>
