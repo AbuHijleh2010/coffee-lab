@@ -11,79 +11,9 @@ const STORAGE_KEYS = {
 
 let supabaseClient = null;
 
-// Initial Mock Seed Data for instant local demo testing
-const INITIAL_DEMO_EMPLOYEES = [
-    {
-        id: 'emp_1',
-        name: 'أحمد القاسم',
-        role: 'Senior Barista',
-        avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-        created_at: new Date(Date.now() - 30 * 86400000).toISOString()
-    },
-    {
-        id: 'emp_2',
-        name: 'ميار السعيد',
-        role: 'Head Barista',
-        avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
-        created_at: new Date(Date.now() - 60 * 86400000).toISOString()
-    },
-    {
-        id: 'emp_3',
-        name: 'خالد الكردي',
-        role: 'Barista',
-        avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
-        created_at: new Date(Date.now() - 15 * 86400000).toISOString()
-    },
-    {
-        id: 'emp_4',
-        name: 'لينا سلامة',
-        role: 'Junior Barista',
-        avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-        created_at: new Date(Date.now() - 5 * 86400000).toISOString()
-    }
-];
-
-const INITIAL_DEMO_EVALUATIONS = [
-    {
-        id: 'eval_1',
-        employee_id: 'emp_1',
-        evaluator_name: 'ميار السعيد - Head Barista',
-        evaluation_date: '2026-08-10',
-        quality_rating: 5,
-        speed_rating: 4,
-        cleanliness_rating: 5,
-        teamwork_rating: 5,
-        rating: 4.75,
-        notes: 'استخلاص ممتاز للـ Espresso وسرعة عالية في التبخير أثناء ساعات الضغط.',
-        created_at: new Date('2026-08-10').toISOString()
-    },
-    {
-        id: 'eval_2',
-        employee_id: 'emp_1',
-        evaluator_name: 'ميار السعيد - Head Barista',
-        evaluation_date: '2026-08-01',
-        quality_rating: 4,
-        speed_rating: 5,
-        cleanliness_rating: 4,
-        teamwork_rating: 4,
-        rating: 4.25,
-        notes: 'أداء مستقر وملتزم بنظافة طاحونة الإسبريسو بشكل رائع.',
-        created_at: new Date('2026-08-01').toISOString()
-    },
-    {
-        id: 'eval_3',
-        employee_id: 'emp_3',
-        evaluator_name: 'ميار السعيد - Head Barista',
-        evaluation_date: '2026-08-14',
-        quality_rating: 4,
-        speed_rating: 3,
-        cleanliness_rating: 5,
-        teamwork_rating: 4,
-        rating: 4.0,
-        notes: 'تحسن ملحوظ في الرسم على القهوة (Latte Art) يحتاج تسريع وتيرة العمل في الشفت المسائي.',
-        created_at: new Date('2026-08-14').toISOString()
-    }
-];
+// Initial Seed Data (Empty for fresh live start)
+const INITIAL_DEMO_EMPLOYEES = [];
+const INITIAL_DEMO_EVALUATIONS = [];
 
 // Helper function to prevent network hangs with a strict 800ms timeout
 function withTimeout(promise, ms = 800) {
@@ -100,22 +30,6 @@ function withTimeout(promise, ms = 800) {
  * Initialize Local Store & Optional Supabase Sync
  */
 function initSupabaseService() {
-    // Check local storage seeding
-    try {
-        const existingEmpRaw = localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES);
-        if (!existingEmpRaw || JSON.parse(existingEmpRaw).length === 0) {
-            localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(INITIAL_DEMO_EMPLOYEES));
-        }
-
-        const existingEvalRaw = localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS);
-        if (!existingEvalRaw || JSON.parse(existingEvalRaw).length === 0) {
-            localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(INITIAL_DEMO_EVALUATIONS));
-        }
-    } catch (e) {
-        localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(INITIAL_DEMO_EMPLOYEES));
-        localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(INITIAL_DEMO_EVALUATIONS));
-    }
-
     const url = localStorage.getItem(STORAGE_KEYS.SUPABASE_URL);
     const key = localStorage.getItem(STORAGE_KEYS.SUPABASE_KEY);
 
@@ -140,19 +54,15 @@ function isSupabaseConnected() {
 }
 
 /**
- * Fetch all employees (Guaranteed persistent load)
+ * Fetch all employees
  */
 async function fetchEmployees() {
     let localEmps = [];
     try {
         const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES);
-        localEmps = raw ? JSON.parse(raw) : INITIAL_DEMO_EMPLOYEES;
-        if (!localEmps || localEmps.length === 0) {
-            localEmps = INITIAL_DEMO_EMPLOYEES;
-            localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(INITIAL_DEMO_EMPLOYEES));
-        }
+        localEmps = raw ? JSON.parse(raw) : [];
     } catch (e) {
-        localEmps = INITIAL_DEMO_EMPLOYEES;
+        localEmps = [];
     }
 
     if (isSupabaseConnected()) {
@@ -193,8 +103,8 @@ async function createEmployee(employeeData) {
         if (raw) {
             current = JSON.parse(raw);
         }
-        if (!current || !Array.isArray(current) || current.length === 0) {
-            current = [...INITIAL_DEMO_EMPLOYEES];
+        if (!current || !Array.isArray(current)) {
+            current = [];
         }
         current.unshift(newEmp);
         localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(current));
@@ -216,13 +126,9 @@ async function fetchEvaluations() {
     let localEvals = [];
     try {
         const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS);
-        localEvals = raw ? JSON.parse(raw) : INITIAL_DEMO_EVALUATIONS;
-        if (!localEvals || localEvals.length === 0) {
-            localEvals = INITIAL_DEMO_EVALUATIONS;
-            localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(INITIAL_DEMO_EVALUATIONS));
-        }
+        localEvals = raw ? JSON.parse(raw) : [];
     } catch (e) {
-        localEvals = INITIAL_DEMO_EVALUATIONS;
+        localEvals = [];
     }
 
     if (isSupabaseConnected()) {
@@ -263,9 +169,6 @@ async function createEvaluation(evalData) {
         if (raw) {
             current = JSON.parse(raw);
         }
-        if (!current || !Array.isArray(current) || current.length === 0) {
-            current = [...INITIAL_DEMO_EVALUATIONS];
-        }
         current.unshift(newEval);
         localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(current));
     } catch (err) {
@@ -277,6 +180,25 @@ async function createEvaluation(evalData) {
     }
 
     return newEval;
+}
+
+/**
+ * Delete all employees and evaluations permanently
+ */
+async function deleteAllEmployees() {
+    try {
+        localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify([]));
+        localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify([]));
+    } catch (e) {
+        console.error('Error clearing data:', e);
+    }
+
+    if (isSupabaseConnected()) {
+        withTimeout(supabaseClient.from('employees').delete().neq('id', '0'), 1000).catch(() => {});
+        withTimeout(supabaseClient.from('evaluations').delete().neq('id', '0'), 1000).catch(() => {});
+    }
+
+    return true;
 }
 
 /**

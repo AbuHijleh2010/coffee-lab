@@ -189,10 +189,13 @@ function renderEmployeesGrid() {
 
     if (filtered.length === 0) {
         grid.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">
-                <i class="fa-solid fa-mug-hot" style="font-size: 3rem; color: var(--text-dim); margin-bottom: 1rem; display: block;"></i>
-                <h3 style="color: var(--text-muted);">لا يوجد موظفين يطابقون خيارات البحث</h3>
-                <p style="font-size: 0.88rem; color: var(--text-dim); margin-top: 0.5rem;">يمكنك إضافة موظف جديد أو تعديل تصفية البحث.</p>
+            <div style="grid-column: 1 / -1; text-align: center; padding: 3.5rem 1.5rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px dashed var(--border-color); backdrop-filter: blur(16px);">
+                <i class="fa-solid fa-mug-hot" style="font-size: 3.2rem; color: var(--primary-gold); margin-bottom: 1rem; display: block;"></i>
+                <h3 style="color: #ffffff; font-weight: 800; font-size: 1.3rem;">لا يوجد موظفون حالياً في قائمة Coffee Lab</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 1.5rem;">ابدأ العمل مباشرة بإضافة أعضاء فريق الباريستا الحقيقيين للبدء بتسجيل التقييمات.</p>
+                <button class="btn btn-primary" onclick="openModal('addEmployeeModal')">
+                    <i class="fa-solid fa-user-plus"></i> إضافة أول موظف الآن
+                </button>
             </div>
         `;
         return;
@@ -260,6 +263,17 @@ async function handleDeleteEmployeePrompt(empId, empName) {
     if (confirm(`هل أنت تأكد من إزالة الموظف "${empName}" من فريق Coffee Lab؟\n(سيتم إزالة تفاصيل وتاريخ تقييماته تلقائياً)`)) {
         await deleteEmployee(empId);
         showToast(`تم حذف الموظف ${empName} بنجاح`, 'warning');
+        await refreshAppData();
+    }
+}
+
+/**
+ * Handle Delete All Employees Confirmation Prompt
+ */
+async function handleDeleteAllPrompt() {
+    if (confirm('هل أنت تأكد من حذف جميع الموظفين والتقييمات والبدء بقائمة نظيفة 0؟')) {
+        await deleteAllEmployees();
+        showToast('تم مسح جميع الموظفين والبدء بقائمة جديدة بنجاح!', 'warning');
         await refreshAppData();
     }
 }
