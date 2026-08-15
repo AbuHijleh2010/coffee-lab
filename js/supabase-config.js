@@ -54,9 +54,14 @@ function isSupabaseConnected() {
 }
 
 /**
- * Fetch all employees
+ * Fetch all employees (Strict local storage priority)
  */
 async function fetchEmployees() {
+    // If user explicitly cleared data, return empty array immediately
+    if (localStorage.getItem('coffeelab_is_cleared') === 'true') {
+        return [];
+    }
+
     let localEmps = [];
     try {
         const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES);
@@ -65,19 +70,16 @@ async function fetchEmployees() {
         localEmps = [];
     }
 
-    if (isSupabaseConnected()) {
+    // Only query Supabase if local store has never been set
+    if (isSupabaseConnected() && !localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES)) {
         try {
             const res = await withTimeout(
                 supabaseClient.from('employees').select('*').order('created_at', { ascending: false }),
                 800
             );
             if (res && !res.error && res.data && res.data.length > 0) {
-                const mergedMap = new Map();
-                localEmps.forEach(e => mergedMap.set(e.id || e.name, e));
-                res.data.forEach(e => mergedMap.set(e.id || e.name, e));
-                const finalEmps = Array.from(mergedMap.values());
-                localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(finalEmps));
-                return finalEmps;
+                localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(res.data));
+                return res.data;
             }
         } catch (e) {
             console.warn('Supabase fetch employees timeout/error:', e.message);
@@ -91,6 +93,9 @@ async function fetchEmployees() {
  * Add a new employee (Instant permanent save)
  */
 async function createEmployee(employeeData) {
+    // Clear the empty flag since a new employee is added
+    localStorage.removeItem('coffeelab_is_cleared');
+
     const newEmp = {
         id: 'emp_' + Date.now(),
         ...employeeData,
@@ -120,34 +125,19 @@ async function createEmployee(employeeData) {
 }
 
 /**
- * Fetch all evaluations (Guaranteed persistent load)
+ * Fetch all evaluations
  */
 async function fetchEvaluations() {
+    if (localStorage.getItem('coffeelab_is_cleared') === 'true') {
+        return [];
+    }
+
     let localEvals = [];
     try {
         const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS);
         localEvals = raw ? JSON.parse(raw) : [];
     } catch (e) {
         localEvals = [];
-    }
-
-    if (isSupabaseConnected()) {
-        try {
-            const res = await withTimeout(
-                supabaseClient.from('evaluations').select('*').order('evaluation_date', { ascending: false }),
-                800
-            );
-            if (res && !res.error && res.data && res.data.length > 0) {
-                const mergedMap = new Map();
-                localEvals.forEach(ev => mergedMap.set(ev.id, ev));
-                res.data.forEach(ev => mergedMap.set(ev.id, ev));
-                const finalEvals = Array.from(mergedMap.values());
-                localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(finalEvals));
-                return finalEvals;
-            }
-        } catch (e) {
-            console.warn('Supabase fetch evaluations timeout/error:', e.message);
-        }
     }
 
     return localEvals;
@@ -187,6 +177,7 @@ async function createEvaluation(evalData) {
  */
 async function deleteAllEmployees() {
     try {
+        localStorage.setItem('coffeelab_is_cleared', 'true');
         localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify([]));
         localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify([]));
     } catch (e) {
@@ -207,15 +198,20 @@ async function deleteAllEmployees() {
 async function deleteEmployee(employeeId) {
     try {
         const rawEmps = localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES);
+        let updatedEmps = [];
         if (rawEmps) {
-            const emps = JSON.parse(rawEmps).filter(e => e.id !== employeeId);
-            localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(emps));
+            updatedEmps = JSON.parse(rawEmps).filter(e => e.id !== employeeId);
+            localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(updatedEmps));
         }
 
         const rawEvals = localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS);
         if (rawEvals) {
             const evals = JSON.parse(rawEvals).filter(ev => ev.employee_id !== employeeId);
             localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(evals));
+        }
+
+        if (updatedEmps.length === 0) {
+            localStorage.setItem('coffeelab_is_cleared', 'true');
         }
     } catch (e) {
         console.error('Error deleting employee:', e);
