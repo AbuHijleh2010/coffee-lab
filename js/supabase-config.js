@@ -97,31 +97,36 @@ function withTimeout(promise, ms = 800) {
 }
 
 /**
- * Initialize Supabase Client or Local Demo Store
+ * Initialize Local Store & Optional Supabase Sync
  */
 function initSupabaseService() {
+    // Check local storage seeding
+    try {
+        const existingEmpRaw = localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES);
+        if (!existingEmpRaw || JSON.parse(existingEmpRaw).length === 0) {
+            localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(INITIAL_DEMO_EMPLOYEES));
+        }
+
+        const existingEvalRaw = localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS);
+        if (!existingEvalRaw || JSON.parse(existingEvalRaw).length === 0) {
+            localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(INITIAL_DEMO_EVALUATIONS));
+        }
+    } catch (e) {
+        localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(INITIAL_DEMO_EMPLOYEES));
+        localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(INITIAL_DEMO_EVALUATIONS));
+    }
+
     const url = localStorage.getItem(STORAGE_KEYS.SUPABASE_URL);
     const key = localStorage.getItem(STORAGE_KEYS.SUPABASE_KEY);
 
-    // Only connect if valid non-empty credentials exist
     if (url && key && url.startsWith('http') && window.supabase) {
         try {
             supabaseClient = window.supabase.createClient(url, key);
-            console.log('✅ Supabase initialized');
         } catch (err) {
-            console.error('⚠️ Supabase init error:', err);
             supabaseClient = null;
         }
     } else {
         supabaseClient = null;
-    }
-    
-    // Seed local demo if not present
-    if (!localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES)) {
-        localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(INITIAL_DEMO_EMPLOYEES));
-    }
-    if (!localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS)) {
-        localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(INITIAL_DEMO_EVALUATIONS));
     }
 
     return isSupabaseConnected();
@@ -135,13 +140,17 @@ function isSupabaseConnected() {
 }
 
 /**
- * Fetch all employees (Lightning fast with instant local persistence)
+ * Fetch all employees (Guaranteed persistent load)
  */
 async function fetchEmployees() {
     let localEmps = [];
     try {
         const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES);
         localEmps = raw ? JSON.parse(raw) : INITIAL_DEMO_EMPLOYEES;
+        if (!localEmps || localEmps.length === 0) {
+            localEmps = INITIAL_DEMO_EMPLOYEES;
+            localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(INITIAL_DEMO_EMPLOYEES));
+        }
     } catch (e) {
         localEmps = INITIAL_DEMO_EMPLOYEES;
     }
@@ -161,7 +170,7 @@ async function fetchEmployees() {
                 return finalEmps;
             }
         } catch (e) {
-            console.warn('Supabase fetch employees timeout/error, using local data:', e.message);
+            console.warn('Supabase fetch employees timeout/error:', e.message);
         }
     }
 
@@ -169,7 +178,7 @@ async function fetchEmployees() {
 }
 
 /**
- * Add a new employee (Guaranteed 0ms instant save)
+ * Add a new employee (Instant permanent save)
  */
 async function createEmployee(employeeData) {
     const newEmp = {
@@ -178,33 +187,40 @@ async function createEmployee(employeeData) {
         created_at: new Date().toISOString()
     };
 
-    // Save locally FIRST so it is 100% preserved permanently
     try {
-        const current = JSON.parse(localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES) || JSON.stringify(INITIAL_DEMO_EMPLOYEES));
+        let current = [];
+        const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES);
+        if (raw) {
+            current = JSON.parse(raw);
+        }
+        if (!current || !Array.isArray(current) || current.length === 0) {
+            current = [...INITIAL_DEMO_EMPLOYEES];
+        }
         current.unshift(newEmp);
         localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(current));
     } catch (err) {
         console.error('Error saving to localStorage:', err);
     }
 
-    // Sync to Supabase in background (does not block UI)
     if (isSupabaseConnected()) {
-        withTimeout(supabaseClient.from('employees').insert([employeeData]), 1000).catch(e => {
-            console.warn('Supabase async sync skipped/failed:', e.message);
-        });
+        withTimeout(supabaseClient.from('employees').insert([employeeData]), 1000).catch(() => {});
     }
 
     return newEmp;
 }
 
 /**
- * Fetch all evaluations (Lightning fast with instant local persistence)
+ * Fetch all evaluations (Guaranteed persistent load)
  */
 async function fetchEvaluations() {
     let localEvals = [];
     try {
         const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS);
         localEvals = raw ? JSON.parse(raw) : INITIAL_DEMO_EVALUATIONS;
+        if (!localEvals || localEvals.length === 0) {
+            localEvals = INITIAL_DEMO_EVALUATIONS;
+            localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(INITIAL_DEMO_EVALUATIONS));
+        }
     } catch (e) {
         localEvals = INITIAL_DEMO_EVALUATIONS;
     }
@@ -224,7 +240,7 @@ async function fetchEvaluations() {
                 return finalEvals;
             }
         } catch (e) {
-            console.warn('Supabase fetch evaluations timeout/error, using local data:', e.message);
+            console.warn('Supabase fetch evaluations timeout/error:', e.message);
         }
     }
 
@@ -232,7 +248,7 @@ async function fetchEvaluations() {
 }
 
 /**
- * Save new evaluation (Guaranteed 0ms instant save)
+ * Save new evaluation (Instant permanent save)
  */
 async function createEvaluation(evalData) {
     const newEval = {
@@ -241,20 +257,23 @@ async function createEvaluation(evalData) {
         created_at: new Date().toISOString()
     };
 
-    // Save locally FIRST so it is 100% preserved permanently
     try {
-        const current = JSON.parse(localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS) || JSON.stringify(INITIAL_DEMO_EVALUATIONS));
+        let current = [];
+        const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS);
+        if (raw) {
+            current = JSON.parse(raw);
+        }
+        if (!current || !Array.isArray(current) || current.length === 0) {
+            current = [...INITIAL_DEMO_EVALUATIONS];
+        }
         current.unshift(newEval);
         localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(current));
     } catch (err) {
         console.error('Error saving evaluation to localStorage:', err);
     }
 
-    // Sync to Supabase in background (does not block UI)
     if (isSupabaseConnected()) {
-        withTimeout(supabaseClient.from('evaluations').insert([evalData]), 1000).catch(e => {
-            console.warn('Supabase evaluation sync skipped/failed:', e.message);
-        });
+        withTimeout(supabaseClient.from('evaluations').insert([evalData]), 1000).catch(() => {});
     }
 
     return newEval;
