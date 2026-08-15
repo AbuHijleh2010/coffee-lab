@@ -243,11 +243,25 @@ function renderEmployeesGrid() {
                 <button class="btn btn-primary btn-sm" onclick="openEvaluationModal('${emp.id}')">
                     <i class="fa-solid fa-pen"></i> تقييم
                 </button>
+                <button class="btn btn-danger-icon btn-sm" title="حذف الموظف" onclick="handleDeleteEmployeePrompt('${emp.id}', '${emp.name.replace(/'/g, "\\'")}')">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
             </div>
         `;
 
         grid.appendChild(card);
     });
+}
+
+/**
+ * Handle Delete Employee Confirmation Prompt
+ */
+async function handleDeleteEmployeePrompt(empId, empName) {
+    if (confirm(`هل أنت تأكد من إزالة الموظف "${empName}" من فريق Coffee Lab؟\n(سيتم إزالة تفاصيل وتاريخ تقييماته تلقائياً)`)) {
+        await deleteEmployee(empId);
+        showToast(`تم حذف الموظف ${empName} بنجاح`, 'warning');
+        await refreshAppData();
+    }
 }
 
 /**

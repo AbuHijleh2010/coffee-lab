@@ -278,3 +278,31 @@ async function createEvaluation(evalData) {
 
     return newEval;
 }
+
+/**
+ * Delete an employee and associated evaluations permanently
+ */
+async function deleteEmployee(employeeId) {
+    try {
+        const rawEmps = localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES);
+        if (rawEmps) {
+            const emps = JSON.parse(rawEmps).filter(e => e.id !== employeeId);
+            localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(emps));
+        }
+
+        const rawEvals = localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS);
+        if (rawEvals) {
+            const evals = JSON.parse(rawEvals).filter(ev => ev.employee_id !== employeeId);
+            localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(evals));
+        }
+    } catch (e) {
+        console.error('Error deleting employee:', e);
+    }
+
+    if (isSupabaseConnected()) {
+        withTimeout(supabaseClient.from('employees').delete().eq('id', employeeId), 1000).catch(() => {});
+        withTimeout(supabaseClient.from('evaluations').delete().eq('employee_id', employeeId), 1000).catch(() => {});
+    }
+
+    return true;
+}
