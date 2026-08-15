@@ -32,9 +32,14 @@ document.addEventListener('DOMContentLoaded', async () => {
  */
 function setupEventListeners() {
     // Nav buttons
-    document.getElementById('newEvaluationBtn').addEventListener('click', () => openEvaluationModal());
-    document.getElementById('addEmployeeBtn').addEventListener('click', () => openModal('addEmployeeModal'));
-    document.getElementById('supabaseConfigBtn').addEventListener('click', () => openConfigModal());
+    const newEvalBtn = document.getElementById('newEvaluationBtn');
+    if (newEvalBtn) newEvalBtn.addEventListener('click', () => openEvaluationModal());
+
+    const addEmpBtn = document.getElementById('addEmployeeBtn');
+    if (addEmpBtn) addEmpBtn.addEventListener('click', () => openModal('addEmployeeModal'));
+
+    const cfgBtn = document.getElementById('supabaseConfigBtn');
+    if (cfgBtn) cfgBtn.addEventListener('click', () => openConfigModal());
 
     // Search and Role Filter
     document.getElementById('searchInput').addEventListener('input', (e) => {
