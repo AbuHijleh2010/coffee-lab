@@ -10,20 +10,24 @@ let state = {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Initialize Supabase Service
-    const connected = initSupabaseService();
-    updateConnectionUI(connected);
+    try {
+        // 1. Initialize Supabase Service
+        const connected = initSupabaseService();
+        updateConnectionUI(connected);
 
-    // 2. Set default date to today in evaluation form
-    const dateInput = document.getElementById('evaluationDate');
-    if (dateInput) {
-        dateInput.value = new Date().toISOString().split('T')[0];
+        // 2. Set default date to today in evaluation form
+        const dateInput = document.getElementById('evaluationDate');
+        if (dateInput) {
+            dateInput.value = new Date().toISOString().split('T')[0];
+        }
+
+        // 3. Register Event Listeners
+        setupEventListeners();
+    } catch (err) {
+        console.warn('Initialization warning:', err);
     }
 
-    // 3. Register Event Listeners
-    setupEventListeners();
-
-    // 4. Load Data & Render
+    // 4. Load Data & Render (Guaranteed Execution)
     await refreshAppData();
 });
 
@@ -460,13 +464,15 @@ function updateConnectionUI(isConnected) {
     const badge = document.getElementById('connectionBadge');
     const demoBanner = document.getElementById('demoNoticeBanner');
 
-    if (isConnected) {
-        badge.textContent = 'متصل بـ Supabase';
-        badge.className = 'badge badge-success';
-        if (demoBanner) demoBanner.style.display = 'none';
-    } else {
-        badge.textContent = 'تجريبي محلي';
-        badge.className = 'badge badge-warning';
+    if (badge) {
+        if (isConnected) {
+            badge.textContent = 'متصل بـ Supabase';
+            badge.className = 'badge badge-success';
+            if (demoBanner) demoBanner.style.display = 'none';
+        } else {
+            badge.textContent = 'تجريبي محلي';
+            badge.className = 'badge badge-warning';
+        }
     }
 }
 
