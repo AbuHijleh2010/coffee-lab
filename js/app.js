@@ -1253,3 +1253,47 @@ async function applyImportedData(parsedData) {
     }
 }
 
+/**
+ * Handle Add / Edit Employee Form Submission
+ */
+async function handleAddEmployeeSubmit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+
+    const nameInput = document.getElementById('empName');
+    const roleSelect = document.getElementById('empRole');
+    const avatarInput = document.getElementById('empAvatar');
+
+    if (!nameInput || !nameInput.value.trim()) {
+        showToast('يرجى كتابة اسم الموظف', 'warning');
+        return;
+    }
+
+    const empData = {
+        name: nameInput.value.trim(),
+        role: roleSelect ? roleSelect.value : 'Barista',
+        avatar_url: avatarInput ? avatarInput.value.trim() : ''
+    };
+
+    try {
+        if (state.editingEmployeeId) {
+            await updateEmployee(state.editingEmployeeId, empData);
+            showToast('تم تعديل بيانات الموظف بنجاح! ✨', 'success');
+            state.editingEmployeeId = null;
+        } else {
+            const created = await createEmployee(empData);
+            showToast(`تمت إضافة الموظف "${created.name}" بنجاح! ☕`, 'success');
+        }
+
+        closeModal('addEmployeeModal');
+
+        // Reset Form
+        if (nameInput) nameInput.value = '';
+        if (avatarInput) avatarInput.value = '';
+
+        await refreshAppData();
+    } catch (err) {
+        console.error('Error adding employee:', err);
+        showToast('حدث خطأ أثناء إضافة الموظف', 'danger');
+    }
+}
+
