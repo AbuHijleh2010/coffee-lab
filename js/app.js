@@ -450,6 +450,14 @@ function openEvaluationModal(selectedEmployeeId = null, evalToEdit = null) {
         document.getElementById('cleanlinessRating').value = evalToEdit.cleanliness_rating || 5;
         document.getElementById('teamworkRating').value = evalToEdit.teamwork_rating || 5;
 
+        document.getElementById('apronUniformStatus').value = evalToEdit.apronUniformStatus || 'نظيف ومرتب بالكامل';
+        document.getElementById('hygieneNailsStatus').value = evalToEdit.hygieneNailsStatus || 'ممتاز وملتزم بالكامل';
+        document.getElementById('groomingRating').value = evalToEdit.grooming_rating || 5;
+
+        document.getElementById('arrivalTime').value = evalToEdit.arrivalTime || '';
+        document.getElementById('attendanceStatus').value = evalToEdit.attendanceStatus || 'على الوقت بالدقيقة / مبكر';
+        document.getElementById('attendanceRating').value = evalToEdit.attendance_rating || 5;
+
         document.getElementById('evalMistakes').value = evalToEdit.evalMistakes || '';
         document.getElementById('evalNotes').value = evalToEdit.notes || '';
 
@@ -505,6 +513,14 @@ async function handleEvaluationSubmit(e) {
     const cleanliness_rating = parseInt(document.getElementById('cleanlinessRating').value || '5');
     const teamwork_rating = parseInt(document.getElementById('teamworkRating').value || '5');
 
+    const apronUniformStatus = document.getElementById('apronUniformStatus').value;
+    const hygieneNailsStatus = document.getElementById('hygieneNailsStatus').value;
+    const grooming_rating = parseInt(document.getElementById('groomingRating').value || '5');
+
+    const arrivalTime = document.getElementById('arrivalTime').value;
+    const attendanceStatus = document.getElementById('attendanceStatus').value;
+    const attendance_rating = parseInt(document.getElementById('attendanceRating').value || '5');
+
     const evalMistakes = document.getElementById('evalMistakes').value.trim();
     const notes = document.getElementById('evalNotes').value.trim();
 
@@ -526,8 +542,8 @@ async function handleEvaluationSubmit(e) {
         });
     }
 
-    // Calculate Overall Rating average of 4 criteria + quiz
-    const avgScore = ((quality_rating + speed_rating + cleanliness_rating + teamwork_rating + quiz_rating) / 5).toFixed(2);
+    // Calculate Overall Rating average of 6 criteria + quiz (7 total)
+    const avgScore = ((quality_rating + speed_rating + cleanliness_rating + teamwork_rating + quiz_rating + grooming_rating + attendance_rating) / 7).toFixed(2);
 
     const evalPayload = {
         employee_id,
@@ -541,6 +557,12 @@ async function handleEvaluationSubmit(e) {
         speed_rating,
         cleanliness_rating,
         teamwork_rating,
+        apronUniformStatus,
+        hygieneNailsStatus,
+        grooming_rating,
+        arrivalTime,
+        attendanceStatus,
+        attendance_rating,
         rating: parseFloat(avgScore),
         checklist_results,
         evalMistakes,
@@ -672,8 +694,15 @@ function openDetailsModal(empId) {
                         </div>
                     </div>
 
-                    <div class="station-badge-tag">
-                        <i class="fa-solid fa-mug-saucer"></i> ${stationTitle}
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+                        <div class="station-badge-tag">
+                            <i class="fa-solid fa-mug-saucer"></i> ${stationTitle}
+                        </div>
+                        ${ev.arrivalTime ? `
+                            <div class="station-badge-tag" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-color: rgba(56, 189, 248, 0.3);">
+                                <i class="fa-solid fa-clock"></i> الوصول: ${ev.arrivalTime} (${ev.attendanceStatus || 'على الوقت'})
+                            </div>
+                        ` : ''}
                     </div>
 
                     ${ev.quiz_drink_name ? `
@@ -688,7 +717,19 @@ function openDetailsModal(empId) {
                         <div><strong>السرعة والميزان:</strong> ${ev.speed_rating || 5}/5 ★</div>
                         <div><strong>النظافة والـ FIFO:</strong> ${ev.cleanliness_rating || 5}/5 ★</div>
                         <div><strong>الانضباط والفريق:</strong> ${ev.teamwork_rating || 5}/5 ★</div>
+                        <div><strong>المظهر والنظافة الشخصية:</strong> ${ev.grooming_rating || 5}/5 ★</div>
+                        <div><strong>الالتزام ومواعيد الشفت:</strong> ${ev.attendance_rating || 5}/5 ★</div>
                     </div>
+
+                    ${ev.apronUniformStatus || ev.hygieneNailsStatus ? `
+                        <div class="notes-box" style="border-right-color: #38bdf8; background: rgba(15, 23, 42, 0.5);">
+                            <strong><i class="fa-solid fa-shirt"></i> المظهر والزي والجمالية:</strong>
+                            <div style="font-size: 0.85rem; margin-top: 0.25rem;">
+                                • المريول والزي: ${ev.apronUniformStatus || 'نظيف'}<br>
+                                • النظافة والأظافر: ${ev.hygieneNailsStatus || 'ممتاز'}
+                            </div>
+                        </div>
+                    ` : ''}
 
                     ${ev.checklist_results && ev.checklist_results.length > 0 ? `
                         <div class="checklist-summary-box">

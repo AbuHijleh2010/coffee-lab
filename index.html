@@ -356,6 +356,85 @@
                     </div>
                 </div>
 
+                <!-- Personal Appearance & Uniform Section -->
+                <div class="criteria-card-box" style="margin-top: 1rem;">
+                    <h4><i class="fa-solid fa-shirt"></i> المظهر العام والنظافة الشخصية والزي الرسمي:</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="apronUniformStatus"><i class="fa-solid fa-vest"></i> حالة المريول والزي الرسمي</label>
+                            <select id="apronUniformStatus" class="custom-select">
+                                <option value="نظيف ومرتب بالكامل">نظيف ومرتب بالكامل (المريول + الكاب/النامية + الحذاء)</option>
+                                <option value="المريول بحاجة لتنظيف">المريول ملوث أو بحاجة لغسيل/تنظيف</option>
+                                <option value="عدم الالتزام بالزي الكامل">غير ملتزم بالزي الرسمي الكامل</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="hygieneNailsStatus"><i class="fa-solid fa-hand"></i> النظافة الشخصية والأظافر والشعر</label>
+                            <select id="hygieneNailsStatus" class="custom-select">
+                                <option value="ممتاز وملتزم بالكامل">ممتاز (الأظافر مقصوصة ونظيفة، ترتيب الشعر/الذقن، بدون إكسسوارات)</option>
+                                <option value="ملاحظة على الأظافر أو الإكسسوارات">ملاحظة: أظافر غير مقصوصة أو ارتداء ساعات/إكسسوارات بالبار</option>
+                                <option value="ملاحظة على الشعر أو النظافة">ملاحظة: ترتيب الشعر أو الذقن بحاجة لاهتمام</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="criteria-row" style="margin-top: 0.5rem;">
+                        <div class="criteria-info">
+                            <span class="criteria-title">تقييم المظهر والنظافة الشخصية</span>
+                            <span class="criteria-desc">مدى التزامه بمعايير المظهر والنظافة الخاصة بـ Coffee Lab</span>
+                        </div>
+                        <div class="star-rating-input" data-rating-target="groomingRating">
+                            <input type="hidden" id="groomingRating" value="5">
+                            <div class="stars" id="groomingStars">
+                                <i class="fa-solid fa-star active" data-val="1"></i>
+                                <i class="fa-solid fa-star active" data-val="2"></i>
+                                <i class="fa-solid fa-star active" data-val="3"></i>
+                                <i class="fa-solid fa-star active" data-val="4"></i>
+                                <i class="fa-solid fa-star active" data-val="5"></i>
+                            </div>
+                            <span class="rating-num" id="groomingRatingVal">5/5</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shift Attendance & Punctuality Section -->
+                <div class="criteria-card-box" style="margin-top: 1rem;">
+                    <h4><i class="fa-solid fa-user-clock"></i> الالتزام بالحضور ومواعيد الشفت:</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="arrivalTime"><i class="fa-solid fa-clock"></i> وقت وصول الموظف للشفت</label>
+                            <input type="time" id="arrivalTime" class="custom-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="attendanceStatus"><i class="fa-solid fa-traffic-light"></i> حالة الحضور والانضباط</label>
+                            <select id="attendanceStatus" class="custom-select">
+                                <option value="على الوقت بالدقيقة / مبكر">على الوقت بالدقيقة / مبكر (On Time)</option>
+                                <option value="تأخير بسيط (1 - 15 دقيقة)">تأخير بسيط (1 - 15 دقيقة)</option>
+                                <option value="تأخير كبير (أكثر من 15 دقيقة)">تأخير كبير (أكثر من 15 دقيقة)</option>
+                                <option value="مغادرة مبكرة بدون إذن">مغادرة مبكرة بدون إذن</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="criteria-row" style="margin-top: 0.5rem;">
+                        <div class="criteria-info">
+                            <span class="criteria-title">تقييم الانضباط ومواعيد الحضور</span>
+                            <span class="criteria-desc">التزامه ببداية الشفت والجاهزية بالزي الرسمي قبل الاستلام</span>
+                        </div>
+                        <div class="star-rating-input" data-rating-target="attendanceRating">
+                            <input type="hidden" id="attendanceRating" value="5">
+                            <div class="stars" id="attendanceStars">
+                                <i class="fa-solid fa-star active" data-val="1"></i>
+                                <i class="fa-solid fa-star active" data-val="2"></i>
+                                <i class="fa-solid fa-star active" data-val="3"></i>
+                                <i class="fa-solid fa-star active" data-val="4"></i>
+                                <i class="fa-solid fa-star active" data-val="5"></i>
+                            </div>
+                            <span class="rating-num" id="attendanceRatingVal">5/5</span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Incident & Mistake Log (Open Field) -->
                 <div class="form-group highlight-danger-box">
                     <label for="evalMistakes"><i class="fa-solid fa-triangle-exclamation"></i> سجل الأخطاء والملاحظات الميدانية (غير محدود)</label>
@@ -453,7 +532,7 @@
     <div id="toastContainer" class="toast-container"></div>
 
     <!-- Application JavaScript Files -->
-    <script src="js/supabase-config.js?v=1.0.8"></script>
-    <script src="js/app.js?v=1.0.8"></script>
+    <script src="js/supabase-config.js?v=1.0.9"></script>
+    <script src="js/app.js?v=1.0.9"></script>
 </body>
 </html>
