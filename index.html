@@ -13,8 +13,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@500;700;800&family=Readex+Pro:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Main CSS (Imperial Midnight Velvet Obsidian & 24K Royal Gold Edition v5000) -->
-    <link rel="stylesheet" href="css/style.css?v=5000.0">
+    <!-- Main CSS (Imperial Midnight Velvet Obsidian & 24K Royal Gold Edition v6000) -->
+    <link rel="stylesheet" href="css/style.css?v=6000.0">
     <!-- Supabase JS Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -285,8 +285,8 @@
                     
                     <div class="criteria-row">
                         <div class="criteria-info">
-                            <span class="criteria-title"><i class="fa-solid fa-coffee"></i> الجودة والاستخلاص والتبخير</span>
-                            <span class="criteria-desc">درجة الطحن، الاستخلاص الصحيح، درجة حرارة التبخير والرسم</span>
+                            <span class="criteria-title" id="lblQualityTitle"><i class="fa-solid fa-coffee"></i> الجودة والاستخلاص والتبخير</span>
+                            <span class="criteria-desc" id="lblQualityDesc">درجة الطحن، الاستخلاص الصحيح، درجة حرارة التبخير والرسم</span>
                         </div>
                         <div class="star-rating-input" data-rating-target="qualityRating">
                             <input type="hidden" id="qualityRating" value="5">
@@ -303,8 +303,8 @@
 
                     <div class="criteria-row">
                         <div class="criteria-info">
-                            <span class="criteria-title"><i class="fa-solid fa-stopwatch"></i> السرعة والالتزام بالريسبي والميزان</span>
-                            <span class="criteria-desc">استخدام الميزان والشيقر والسرعة في تحضير الطلبات</span>
+                            <span class="criteria-title" id="lblSpeedTitle"><i class="fa-solid fa-stopwatch"></i> السرعة والالتزام بالريسبي والميزان</span>
+                            <span class="criteria-desc" id="lblSpeedDesc">استخدام الميزان والشيقر والسرعة في تحضير الطلبات</span>
                         </div>
                         <div class="star-rating-input" data-rating-target="speedRating">
                             <input type="hidden" id="speedRating" value="5">
@@ -321,8 +321,8 @@
 
                     <div class="criteria-row">
                         <div class="criteria-info">
-                            <span class="criteria-title"><i class="fa-solid fa-broom"></i> نظافة البار والالتزام بتواريخ الفتح FIFO</span>
-                            <span class="criteria-desc">نظافة الأجهزة والثلاجات وتوثيق تاريخ الفتح على الحليب النباتي والخلطات</span>
+                            <span class="criteria-title" id="lblCleanTitle"><i class="fa-solid fa-broom"></i> نظافة البار والالتزام بتواريخ الفتح FIFO</span>
+                            <span class="criteria-desc" id="lblCleanDesc">نظافة الأجهزة والثلاجات وتوثيق تاريخ الفتح على الحليب النباتي والخلطات</span>
                         </div>
                         <div class="star-rating-input" data-rating-target="cleanlinessRating">
                             <input type="hidden" id="cleanlinessRating" value="5">
@@ -339,8 +339,8 @@
 
                     <div class="criteria-row">
                         <div class="criteria-info">
-                            <span class="criteria-title"><i class="fa-solid fa-handshake"></i> الانضباط والعمل الجماعي</span>
-                            <span class="criteria-desc">الالتزام بتوجيهات الهيد بار والتعاون مع فريق الشفت</span>
+                            <span class="criteria-title" id="lblTeamTitle"><i class="fa-solid fa-handshake"></i> الانضباط والعمل الجماعي</span>
+                            <span class="criteria-desc" id="lblTeamDesc">الالتزام بتوجيهات الهيد بار والتعاون مع فريق الشفت</span>
                         </div>
                         <div class="star-rating-input" data-rating-target="teamworkRating">
                             <input type="hidden" id="teamworkRating" value="5">
@@ -553,7 +553,7 @@
     <div id="toastContainer" class="toast-container"></div>
 
     <!-- Application JavaScript Files -->
-    <script src="js/supabase-config.js?v=5000.0"></script>
-    <script src="js/app.js?v=5000.0"></script>
+    <script src="js/supabase-config.js?v=6000.0"></script>
+    <script src="js/app.js?v=6000.0"></script>
 </body>
 </html>

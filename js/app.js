@@ -10,7 +10,8 @@ let state = {
     currentAdmin: sessionStorage.getItem('coffeelab_admin_user') || null,
     pendingAction: null,
     editingEvalId: null,
-    editingEmpId: null
+    editingEmpId: null,
+    currentEquipmentStatuses: {}
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -372,60 +373,152 @@ async function handleDeleteAllPrompt() {
 /**
  * Open Head Barista Evaluation Modal
  */
-// Head Barista Dynamic Checklists Data Structure
+// Head Barista Dynamic Checklists & Station-Specific Criteria Data Structure
 const STATION_CHECKLISTS = {
-    espresso: {
-        title: '☕ بار الإسبريسو (Espresso Machine & Coffee Bar)',
+    cold: {
+        title: '🧊 فحص وتفتيش أجهزة ومعدات بار البارد (Cold Bar Equipment Status)',
         items: [
-            { id: 'chk_dose', text: 'الجرعة واستخلاص الإسبريسو صحيحة ومعايرة الشوت بدقة' },
-            { id: 'chk_clean_machine', text: 'نظافة ماكينة الإسبريسو، البورتافلتر، الستيم والشوتات' },
-            { id: 'chk_milk_fifo', text: 'ترتيب الحليب حسب التاريخ (FIFO) وتوثيق تاريخ فتح الحليب النباتي' },
-            { id: 'chk_fridge_under', text: 'نظافة وترتيب ثلاجة الحليب السفلية الخاصة بالماكينة' },
-            { id: 'chk_coffee_validity', text: 'صلاحية القهوة ونظافة طاحونة الإسبريسو' }
-        ]
+            { id: 'item_ice_coffee_reg', text: 'ماكينة الآيس كوفي العادي', icon: 'fa-glass-water', type: '3state' },
+            { id: 'item_ice_coffee_diet', text: 'ماكينة آيس كوفي الدايت', icon: 'fa-bottle-water', type: '3state' },
+            { id: 'item_freezer_ice_cream', text: 'فريزر الفروزن والبوظة', icon: 'fa-snowflake', type: '2state' },
+            { id: 'item_syrups_purees', text: 'منطقة السيربات والبيوريهات', icon: 'fa-bottle-droplet', type: '2state' },
+            { id: 'item_drizzles_sauces', text: 'منطقة الدرزلات والصلصات', icon: 'fa-wine-bottle', type: '2state' },
+            { id: 'item_fridge_mixes', text: 'ثلاجة الحليب والخلطات الباردة (FIFO وتاريخ الفتح)', icon: 'fa-temperature-arrow-down', type: '2state' }
+        ],
+        criteriaLabels: {
+            c1_title: '<i class="fa-solid fa-snowflake"></i> التزام بريسبي المشروبات الباردة والشيقر',
+            c1_desc: 'المعايير، الشيك، الميزان ونظافة الكاسات الباردة',
+            c2_title: '<i class="fa-solid fa-stopwatch"></i> سرعة التحضير وتدفق أوردرات البارد',
+            c2_desc: 'سرعة إنجاز العصائر والآيس لاتيه وتنسيق الطلبات',
+            c3_title: '<i class="fa-solid fa-broom"></i> نظافة أجهزة البارد والثلاجات ومواعيد FIFO',
+            c3_desc: 'نظافة الخلاطات وتوثيق تاريخ الفتح على الحليب والخلطات',
+            c4_title: '<i class="fa-solid fa-handshake"></i> الانضباط والعمل الجماعي بالبار البارد',
+            c4_desc: 'التعاون مع فريق البار والتزام التوجيهات'
+        }
+    },
+    espresso: {
+        title: '☕ فحص وتفتيش أجهزة ومعدات بار الإسبريسو (Espresso Bar Equipment Status)',
+        items: [
+            { id: 'item_esp_machine', text: 'ماكينة الإسبريسو والجروب هيدز', icon: 'fa-mug-saucer', type: '3state' },
+            { id: 'item_steam_wands', text: 'ستيمارات التبخير والنظافة', icon: 'fa-wand-magic-sparkles', type: '2state' },
+            { id: 'item_grinder_portafilters', text: 'طاحونة القهوة والبورتافلترات والمعايرة', icon: 'fa-gear', type: '2state' },
+            { id: 'item_under_fridge', text: 'ثلاجة الحليب السفلية وترتيب FIFO', icon: 'fa-temperature-low', type: '2state' },
+            { id: 'item_pitchers_area', text: 'منطقة التبخير والبتشرات ونظافتها', icon: 'fa-droplet', type: '2state' }
+        ],
+        criteriaLabels: {
+            c1_title: '<i class="fa-solid fa-coffee"></i> الجودة والاستخلاص والتبخير والرسم',
+            c1_desc: 'درجة الطحن، الاستخلاص الصحيح، درجة حرارة التبخير والرسم',
+            c2_title: '<i class="fa-solid fa-stopwatch"></i> السرعة والالتزام بالريسبي والميزان',
+            c2_desc: 'استخدام الميزان والسرعة في تحضير شوتات الإسبريسو',
+            c3_title: '<i class="fa-solid fa-broom"></i> نظافة ماكينة الإسبريسو وتاريخ فتح الحليب النباتي',
+            c3_desc: 'نظافة الأجهزة والثلاجة السفلية وتوثيق تاريخ الفتح',
+            c4_title: '<i class="fa-solid fa-handshake"></i> الانضباط والعمل الجماعي بالبار',
+            c4_desc: 'الالتزام بتوجيهات الهيد بار والتعاون مع فريق الشفت'
+        }
     },
     assistant: {
-        title: '🥛 مساعد البار (Bar Assistant & Mix Prep Bar)',
+        title: '🥛 فحص وتفتيش مواكن وتجهيزات مساعد البار (Bar Assistant Equipment Status)',
         items: [
-            { id: 'chk_pitchers', text: 'نظافة البتشرات وترتيب السيربات والبودرات بالبار' },
-            { id: 'chk_prep_machines', text: 'تجهيز ونظافة مواكن المشروبات (آيس تي، سبانش، آيس فانيلا، ميس فلورا)' },
-            { id: 'chk_recipe_scale', text: 'الالتزام الكامل بالريسبي والمعايير واستخدام الميزان والشيقر بالشكل الصحيح' },
-            { id: 'chk_clean_prep', text: 'نظافة وترتيب بار المساعد والتجهيز المسبق للخلطات' }
-        ]
-    },
-    cold: {
-        title: '🧊 بار المشروبات الباردة (Cold Drinks & Ice Coffee Bar)',
-        items: [
-            { id: 'chk_icecoffee_mac', text: 'جاهزية ونظافة ماكينات الآيس كوفي (الدايت + العادي)' },
-            { id: 'chk_cold_fridge', text: 'ترتيب ونظافة ثلاجة الفروزن، البوظة، السيربات والدرزلات' },
-            { id: 'chk_cold_mixes_fifo', text: 'ترتيب خلطات البارد حسب التواريخ (FIFO) وتجهيز المكونات' },
-            { id: 'chk_small_fridge', text: 'نظافة وترتيب الثلاجة الصغيرة (حليب، خلطات، XL، صودا وتواريخ الفتح)' }
-        ]
+            { id: 'item_iced_tea_mac', text: 'ماكينة الآيس تي', icon: 'fa-mug-hot', type: '3state' },
+            { id: 'item_miss_flora_mac', name: 'ماكينة الميس فلورا', icon: 'fa-seedling', type: '3state' },
+            { id: 'item_spanish_vanilla_mac', text: 'ماكينة السبانش والآيس فانيلا', icon: 'fa-bottle-water', type: '3state' },
+            { id: 'item_shakers_scale', text: 'الشيقرات والبتشرات والميزان', icon: 'fa-scale-unbalanced', type: '2state' },
+            { id: 'item_prep_table_mixes', text: 'طاولة التجهيز والخلطات المسبقة FIFO', icon: 'fa-layer-group', type: '2state' }
+        ],
+        criteriaLabels: {
+            c1_title: '<i class="fa-solid fa-flask"></i> دقة تجهيز الخلطات والسيربات',
+            c1_desc: 'معايرة الخلطات المسبقة بدقة والالتزام بالريسبي المعياري',
+            c2_title: '<i class="fa-solid fa-bolt"></i> السرعة والدعم الفعال لبار الإسبريسو والبارد',
+            c2_desc: 'سرعة توفير احتياجات البار وتلبية الأوردرات',
+            c3_title: '<i class="fa-solid fa-broom"></i> نظافة منطقة التحضير والبتشرات وتاريخ الفتح',
+            c3_desc: 'نظافة المواكن وطاولة التحضير وتوثيق FIFO',
+            c4_title: '<i class="fa-solid fa-handshake"></i> الانضباط والتعاون والتواصل الجيد',
+            c4_desc: 'الالتزام بتوجيهات الشفت والتعاون الكامل مع الفريق'
+        }
     }
 };
 
 /**
- * Render Dynamic Station Checklist based on selected station dropdown
+ * Update Individual Equipment Item Status Pill
+ */
+function setItemStatus(itemId, statusVal) {
+    state.currentEquipmentStatuses[itemId] = statusVal;
+
+    // Update UI active states for pill group
+    const group = document.querySelector(`.status-pill-group[data-item-id="${itemId}"]`);
+    if (group) {
+        group.querySelectorAll('.btn-status-pill').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        const activeBtn = group.querySelector(`.btn-status-pill.pill-${statusVal}`);
+        if (activeBtn) activeBtn.classList.add('active');
+    }
+}
+
+/**
+ * Render Dynamic Station Equipment Status Cards & Station Specific Criteria
  */
 function renderStationChecklist() {
     const stationSelect = document.getElementById('barStation');
     const container = document.getElementById('stationChecklistContainer');
     if (!stationSelect || !container) return;
 
-    const stationKey = stationSelect.value || 'espresso';
+    const stationKey = stationSelect.value || 'cold';
     const config = STATION_CHECKLISTS[stationKey];
     if (!config) return;
 
+    // 1. Update criteria labels according to station
+    const cLabels = config.criteriaLabels;
+    if (cLabels) {
+        const c1T = document.getElementById('lblQualityTitle');
+        const c1D = document.getElementById('lblQualityDesc');
+        const c2T = document.getElementById('lblSpeedTitle');
+        const c2D = document.getElementById('lblSpeedDesc');
+        const c3T = document.getElementById('lblCleanTitle');
+        const c3D = document.getElementById('lblCleanDesc');
+        const c4T = document.getElementById('lblTeamTitle');
+        const c4D = document.getElementById('lblTeamDesc');
+
+        if (c1T) c1T.innerHTML = cLabels.c1_title;
+        if (c1D) c1D.textContent = cLabels.c1_desc;
+        if (c2T) c2T.innerHTML = cLabels.c2_title;
+        if (c2D) c2D.textContent = cLabels.c2_desc;
+        if (c3T) c3T.innerHTML = cLabels.c3_title;
+        if (c3D) c3D.textContent = cLabels.c3_desc;
+        if (c4T) c4T.innerHTML = cLabels.c4_title;
+        if (c4D) c4D.textContent = cLabels.c4_desc;
+    }
+
+    // 2. Render equipment cards with 3-State or 2-State pills
     container.innerHTML = `
         <div class="checklist-card">
-            <h4><i class="fa-solid fa-list-check"></i> ${config.title} - نقاط الفحص والتدقيق:</h4>
-            <div class="checklist-grid">
-                ${config.items.map(item => `
-                    <label class="checklist-item">
-                        <input type="checkbox" id="${item.id}" checked>
-                        <span>${item.text}</span>
-                    </label>
-                `).join('')}
+            <h4><i class="fa-solid fa-list-check"></i> ${config.title}:</h4>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.85rem;">
+                ${config.items.map(item => {
+                    const currentStatus = state.currentEquipmentStatuses[item.id] || 'clean';
+                    return `
+                        <div class="equipment-status-card">
+                            <div class="equipment-header">
+                                <div class="equipment-title">
+                                    <i class="fa-solid ${item.icon}"></i> ${item.text || item.name}
+                                </div>
+                            </div>
+                            <div class="status-pill-group" data-item-id="${item.id}">
+                                <button type="button" class="btn-status-pill pill-clean ${currentStatus === 'clean' ? 'active' : ''}" onclick="setItemStatus('${item.id}', 'clean')">
+                                    <i class="fa-solid fa-circle-check"></i> 🟢 نظيفة / مرتبة
+                                </button>
+                                ${item.type === '3state' ? `
+                                    <button type="button" class="btn-status-pill pill-foam ${currentStatus === 'foam' ? 'active' : ''}" onclick="setItemStatus('${item.id}', 'foam')">
+                                        <i class="fa-solid fa-soap"></i> 🟡 بدها فوم / تعبئة
+                                    </button>
+                                ` : ''}
+                                <button type="button" class="btn-status-pill pill-dirty ${currentStatus === 'dirty' ? 'active' : ''}" onclick="setItemStatus('${item.id}', 'dirty')">
+                                    <i class="fa-solid fa-circle-xmark"></i> 🔴 وسخة / بحاجة تنظيف
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
             </div>
         </div>
     `;
@@ -439,13 +532,16 @@ function openEvaluationModal(selectedEmployeeId = null, evalToEdit = null) {
     
     if (evalToEdit) {
         state.editingEvalId = evalToEdit.id;
+        state.currentEquipmentStatuses = evalToEdit.equipment_statuses ? 
+            evalToEdit.equipment_statuses.reduce((acc, curr) => { acc[curr.id] = curr.status; return acc; }, {}) : {};
+
         if (modalTitle) modalTitle.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> تعديل تقرير تقييم الموظف';
 
         document.getElementById('evalEmployeeSelect').value = evalToEdit.employee_id;
         document.getElementById('evaluatorName').value = evalToEdit.evaluator_name || state.currentAdmin || '';
         document.getElementById('evaluationDate').value = evalToEdit.evaluation_date;
         document.getElementById('shiftType').value = evalToEdit.shift_type || 'صباحي';
-        document.getElementById('barStation').value = evalToEdit.bar_station || 'espresso';
+        document.getElementById('barStation').value = evalToEdit.bar_station || 'cold';
 
         document.getElementById('quizDrinkName').value = evalToEdit.quiz_drink_name || '';
         document.getElementById('quizRating').value = evalToEdit.quiz_rating || 5;
@@ -467,21 +563,9 @@ function openEvaluationModal(selectedEmployeeId = null, evalToEdit = null) {
         document.getElementById('evalNotes').value = evalToEdit.notes || '';
 
         renderStationChecklist();
-
-        // Restore checklist states
-        if (evalToEdit.checklist_results && Array.isArray(evalToEdit.checklist_results)) {
-            const currentStationConfig = STATION_CHECKLISTS[evalToEdit.bar_station || 'espresso'];
-            if (currentStationConfig) {
-                currentStationConfig.items.forEach((item, index) => {
-                    const chk = document.getElementById(item.id);
-                    if (chk && evalToEdit.checklist_results[index]) {
-                        chk.checked = evalToEdit.checklist_results[index].passed;
-                    }
-                });
-            }
-        }
     } else {
         state.editingEvalId = null;
+        state.currentEquipmentStatuses = {};
         if (modalTitle) modalTitle.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> نموذج تقييم موظف (الهيد بار / المسؤول)';
         
         document.getElementById('evaluationForm').reset();
@@ -492,6 +576,7 @@ function openEvaluationModal(selectedEmployeeId = null, evalToEdit = null) {
         }
         document.getElementById('evaluatorName').value = state.currentAdmin || '';
         document.getElementById('evaluationDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('barStation').value = 'cold';
         renderStationChecklist();
     }
     
@@ -534,15 +619,16 @@ async function handleEvaluationSubmit(e) {
         return;
     }
 
-    // Collect checklist items status
+    // Collect 3-State Equipment Statuses
     const currentStationConfig = STATION_CHECKLISTS[bar_station];
-    const checklist_results = [];
+    const equipment_statuses = [];
     if (currentStationConfig) {
         currentStationConfig.items.forEach(item => {
-            const chk = document.getElementById(item.id);
-            checklist_results.push({
-                text: item.text,
-                passed: chk ? chk.checked : false
+            const st = state.currentEquipmentStatuses[item.id] || 'clean';
+            equipment_statuses.push({
+                id: item.id,
+                name: item.text || item.name,
+                status: st
             });
         });
     }
@@ -569,7 +655,7 @@ async function handleEvaluationSubmit(e) {
         attendanceStatus,
         attendance_rating,
         rating: parseFloat(avgScore),
-        checklist_results,
+        equipment_statuses,
         evalMistakes,
         notes
     };
@@ -804,9 +890,25 @@ function openDetailsModal(empId) {
                         </div>
                     ` : ''}
 
-                    ${ev.checklist_results && ev.checklist_results.length > 0 ? `
+                    ${ev.equipment_statuses && ev.equipment_statuses.length > 0 ? `
                         <div class="checklist-summary-box">
-                            <strong style="color: var(--primary-gold);"><i class="fa-solid fa-list-check"></i> نتائج نقاط الفحص والتجهيز:</strong>
+                            <strong style="color: var(--gold-pure);"><i class="fa-solid fa-list-check"></i> حالة الأجهزة ومعدات المحطة:</strong>
+                            <div style="display: flex; flex-direction: column; gap: 0.45rem; margin-top: 0.65rem;">
+                                ${ev.equipment_statuses.map(item => {
+                                    const stClass = item.status === 'clean' ? 'badge-pill-clean' : item.status === 'foam' ? 'badge-pill-foam' : 'badge-pill-dirty';
+                                    const stText = item.status === 'clean' ? '🟢 نظيفة / مرتبة' : item.status === 'foam' ? '🟡 بدها فوم / تعبئة' : '🔴 وسخة / بحاجة تنظيف';
+                                    return `
+                                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(3, 3, 5, 0.6); padding: 0.5rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.88rem;">
+                                            <span style="font-weight: 700; color: #ffffff;">${item.name}</span>
+                                            <span class="status-badge-pill ${stClass}">${stText}</span>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    ` : ev.checklist_results && ev.checklist_results.length > 0 ? `
+                        <div class="checklist-summary-box">
+                            <strong style="color: var(--gold-pure);"><i class="fa-solid fa-list-check"></i> نتائج نقاط الفحص والتجهيز:</strong>
                             <ul class="checklist-bullets">
                                 ${ev.checklist_results.map(c => `
                                     <li class="${c.passed ? 'text-success' : 'text-danger'}">

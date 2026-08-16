@@ -1152,3 +1152,111 @@ body {
     border-color: var(--gold-pure);
     box-shadow: 0 0 14px rgba(255, 215, 0, 0.75);
 }
+
+/* Detailed 3-State Equipment & Component Evaluation Pills */
+.equipment-status-card {
+    background: rgba(9, 9, 14, 0.75);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.15rem 1.35rem;
+    margin-bottom: 0.95rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    transition: var(--transition-fast);
+}
+
+.equipment-status-card:hover {
+    border-color: var(--border-strong);
+    background: rgba(15, 15, 23, 0.9);
+}
+
+.equipment-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.equipment-title {
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.equipment-title i {
+    color: var(--gold-pure);
+    font-size: 1.1rem;
+}
+
+.status-pill-group {
+    display: flex;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+}
+
+.btn-status-pill {
+    flex: 1;
+    min-width: 120px;
+    padding: 0.52rem 0.85rem;
+    font-size: 0.84rem;
+    font-weight: 800;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    transition: var(--transition-fast);
+    font-family: inherit;
+}
+
+.btn-status-pill:hover {
+    transform: translateY(-1.5px);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* 🟢 Clean State */
+.btn-status-pill.pill-clean.active {
+    background: rgba(16, 185, 129, 0.22);
+    border-color: #10b981;
+    color: #34d399;
+    box-shadow: 0 0 14px rgba(16, 185, 129, 0.35);
+}
+
+/* 🟡 Needs Foam / Refill State */
+.btn-status-pill.pill-foam.active {
+    background: rgba(245, 158, 11, 0.22);
+    border-color: #f59e0b;
+    color: #fbbf24;
+    box-shadow: 0 0 14px rgba(245, 158, 11, 0.35);
+}
+
+/* 🔴 Dirty / Cleaning Needed State */
+.btn-status-pill.pill-dirty.active {
+    background: rgba(239, 68, 68, 0.22);
+    border-color: #ef4444;
+    color: #fca5a5;
+    box-shadow: 0 0 14px rgba(239, 68, 68, 0.35);
+}
+
+/* Equipment Status Display Badge in History Details */
+.status-badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.42rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+.badge-pill-clean { background: rgba(16, 185, 129, 0.18); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+.badge-pill-foam { background: rgba(245, 158, 11, 0.18); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+.badge-pill-dirty { background: rgba(239, 68, 68, 0.18); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }
+
