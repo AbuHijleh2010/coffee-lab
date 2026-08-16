@@ -309,7 +309,7 @@ function renderEmployeesGrid() {
             avgRating = (sum / evalCount).toFixed(1);
         }
 
-        const avatar = emp.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(emp.name)}&background=d97706&color=fff`;
+        const avatar = emp.avatar_url || emp.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(emp.name)}&background=d97706&color=fff`;
 
         const card = document.createElement('div');
         card.className = 'emp-card';
@@ -834,7 +834,8 @@ function openEditEmployeeModal(empId) {
 
     document.getElementById('empName').value = emp.name || '';
     document.getElementById('empRole').value = emp.role || 'Barista';
-    document.getElementById('empAvatar').value = emp.avatar_url && !emp.avatar_url.includes('ui-avatars.com') ? emp.avatar_url : '';
+    const currentAvatar = emp.avatar_url || emp.avatar || '';
+    document.getElementById('empAvatar').value = currentAvatar && !currentAvatar.includes('ui-avatars.com') ? currentAvatar : '';
 
     openModal('addEmployeeModal');
 }
@@ -893,7 +894,7 @@ function openDetailsModal(empId) {
         avgRating = (sum / evalCount).toFixed(1);
     }
 
-    const avatar = emp.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(emp.name)}&background=d97706&color=fff`;
+    const avatar = emp.avatar_url || emp.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(emp.name)}&background=d97706&color=fff`;
 
     const modalBody = document.getElementById('detailsModalBody');
     

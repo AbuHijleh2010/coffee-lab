@@ -96,8 +96,12 @@ async function fetchEmployees() {
                 1500
             );
             if (res && !res.error && Array.isArray(res.data)) {
-                localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(res.data));
-                return res.data;
+                const processed = res.data.map(emp => ({
+                    ...emp,
+                    avatar_url: emp.avatar_url || emp.avatar || ''
+                }));
+                localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(processed));
+                return processed;
             }
         } catch (e) {
             console.warn('Supabase fetch employees fallback:', e.message);
