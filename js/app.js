@@ -129,7 +129,7 @@ function setupEventListeners() {
     if (newEvalBtn) newEvalBtn.addEventListener('click', () => openEvaluationModal());
 
     const addEmpBtn = document.getElementById('addEmployeeBtn');
-    if (addEmpBtn) addEmpBtn.addEventListener('click', () => openModal('addEmployeeModal'));
+    if (addEmpBtn) addEmpBtn.addEventListener('click', () => openAddEmployeeModal());
 
     const cfgBtn = document.getElementById('supabaseConfigBtn');
     if (cfgBtn) cfgBtn.addEventListener('click', () => openConfigModal());

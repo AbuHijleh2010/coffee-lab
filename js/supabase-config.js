@@ -121,12 +121,15 @@ async function fetchEmployees() {
  * Add a new employee (Instant permanent save)
  */
 async function createEmployee(employeeData) {
-    // Clear the empty flag since a new employee is added
     localStorage.removeItem('coffeelab_is_cleared');
 
+    const avatarVal = employeeData.avatar_url || employeeData.avatar || '';
     const newEmp = {
         id: 'emp_' + Date.now(),
-        ...employeeData,
+        name: employeeData.name,
+        role: employeeData.role,
+        avatar: avatarVal,
+        avatar_url: avatarVal,
         created_at: new Date().toISOString()
     };
 
@@ -146,7 +149,18 @@ async function createEmployee(employeeData) {
     }
 
     if (isSupabaseConnected()) {
-        withTimeout(supabaseClient.from('employees').insert([newEmp]), 1000).catch(() => {});
+        const dbPayload = {
+            id: newEmp.id,
+            name: newEmp.name,
+            role: newEmp.role,
+            avatar: avatarVal,
+            created_at: newEmp.created_at
+        };
+        try {
+            await withTimeout(supabaseClient.from('employees').insert([dbPayload]), 1500);
+        } catch (e) {
+            console.warn('Supabase insert employee note:', e.message);
+        }
     }
 
     return newEmp;
