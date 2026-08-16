@@ -177,8 +177,20 @@ async function fetchEvaluations() {
                 1500
             );
             if (res && !res.error && Array.isArray(res.data)) {
-                localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(res.data));
-                return res.data;
+                // Parse notes JSON if present to restore custom fields
+                const processed = res.data.map(ev => {
+                    if (ev.notes && ev.notes.startsWith('{') && ev.notes.endsWith('}')) {
+                        try {
+                            const parsed = JSON.parse(ev.notes);
+                            return { ...ev, ...parsed };
+                        } catch (err) {
+                            console.warn('Failed to parse evaluation notes JSON:', err);
+                        }
+                    }
+                    return ev;
+                });
+                localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(processed));
+                return processed;
             }
         } catch (e) {
             console.warn('Supabase fetch evaluations fallback:', e.message);
@@ -216,6 +228,28 @@ async function createEvaluation(evalData) {
 
     if (isSupabaseConnected()) {
         try {
+            // Serialize all custom fields into the notes column to store them in Supabase
+            const jsonNotes = JSON.stringify({
+                bar_station: newEval.bar_station || 'cold',
+                shift_type: newEval.shift_type || 'صباحي',
+                quiz_drink_name: newEval.quiz_drink_name || '',
+                quiz_rating: newEval.quiz_rating || 5,
+                organization_rating: newEval.organization_rating || 5,
+                work_method_rating: newEval.work_method_rating || 5,
+                return_items_rating: newEval.return_items_rating || 5,
+                espresso_dose_status: newEval.espresso_dose_status || '',
+                espresso_extraction_status: newEval.espresso_extraction_status || '',
+                apronUniformStatus: newEval.apronUniformStatus || 'نظيف ومرتب بالكامل',
+                hygieneNailsStatus: newEval.hygieneNailsStatus || 'ممتاز وملتزم بالكامل',
+                grooming_rating: newEval.grooming_rating || 5,
+                arrivalTime: newEval.arrivalTime || '',
+                attendanceStatus: newEval.attendanceStatus || 'على الوقت بالدقيقة / مبكر',
+                attendance_rating: newEval.attendance_rating || 5,
+                equipment_statuses: newEval.equipment_statuses || [],
+                evalMistakes: newEval.evalMistakes || '',
+                notes: newEval.notes || ''
+            });
+
             const dbPayload1 = {
                 id: newEval.id,
                 employee_id: newEval.employee_id,
@@ -226,7 +260,7 @@ async function createEvaluation(evalData) {
                 speed_rating: parseFloat(newEval.speed_rating || 5),
                 cleanliness_rating: parseFloat(newEval.cleanliness_rating || 5),
                 teamwork_rating: parseFloat(newEval.teamwork_rating || 5),
-                notes: newEval.notes || '',
+                notes: jsonNotes,
                 created_at: newEval.created_at
             };
             const res1 = await supabaseClient.from('evaluations').insert([dbPayload1]);
@@ -263,17 +297,53 @@ async function updateEvaluation(evalId, evalData) {
     }
 
     if (isSupabaseConnected()) {
+        // Merge with existing evaluation to preserve other fields in JSON
+        let mergedEval = { ...evalData };
+        try {
+            const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS);
+            if (raw) {
+                const evals = JSON.parse(raw);
+                const existing = evals.find(ev => ev.id === evalId);
+                if (existing) {
+                    mergedEval = { ...existing, ...evalData };
+                }
+            }
+        } catch (err) {
+            console.error('Error merging evaluation for update:', err);
+        }
+
+        const jsonNotes = JSON.stringify({
+            bar_station: mergedEval.bar_station || 'cold',
+            shift_type: mergedEval.shift_type || 'صباحي',
+            quiz_drink_name: mergedEval.quiz_drink_name || '',
+            quiz_rating: mergedEval.quiz_rating || 5,
+            organization_rating: mergedEval.organization_rating || 5,
+            work_method_rating: mergedEval.work_method_rating || 5,
+            return_items_rating: mergedEval.return_items_rating || 5,
+            espresso_dose_status: mergedEval.espresso_dose_status || '',
+            espresso_extraction_status: mergedEval.espresso_extraction_status || '',
+            apronUniformStatus: mergedEval.apronUniformStatus || 'نظيف ومرتب بالكامل',
+            hygieneNailsStatus: mergedEval.hygieneNailsStatus || 'ممتاز وملتزم بالكامل',
+            grooming_rating: mergedEval.grooming_rating || 5,
+            arrivalTime: mergedEval.arrivalTime || '',
+            attendanceStatus: mergedEval.attendanceStatus || 'على الوقت بالدقيقة / مبكر',
+            attendance_rating: mergedEval.attendance_rating || 5,
+            equipment_statuses: mergedEval.equipment_statuses || [],
+            evalMistakes: mergedEval.evalMistakes || '',
+            notes: mergedEval.notes || ''
+        });
+
         const dbPayload = {};
-        if (evalData.evaluator_name !== undefined) dbPayload.evaluator_name = evalData.evaluator_name;
-        if (evalData.evaluation_date !== undefined) dbPayload.evaluation_date = evalData.evaluation_date;
-        if (evalData.rating !== undefined) dbPayload.rating = parseFloat(evalData.rating);
+        if (mergedEval.evaluator_name !== undefined) dbPayload.evaluator_name = mergedEval.evaluator_name;
+        if (mergedEval.evaluation_date !== undefined) dbPayload.evaluation_date = mergedEval.evaluation_date;
+        if (mergedEval.rating !== undefined) dbPayload.rating = parseFloat(mergedEval.rating);
         
-        // Match actual database columns (suffix _rating)
-        if (evalData.quality_rating !== undefined) dbPayload.quality_rating = parseFloat(evalData.quality_rating);
-        if (evalData.speed_rating !== undefined) dbPayload.speed_rating = parseFloat(evalData.speed_rating);
-        if (evalData.cleanliness_rating !== undefined) dbPayload.cleanliness_rating = parseFloat(evalData.cleanliness_rating);
-        if (evalData.teamwork_rating !== undefined) dbPayload.teamwork_rating = parseFloat(evalData.teamwork_rating);
-        if (evalData.notes !== undefined) dbPayload.notes = evalData.notes;
+        // Match actual database columns
+        if (mergedEval.quality_rating !== undefined) dbPayload.quality_rating = parseFloat(mergedEval.quality_rating);
+        if (mergedEval.speed_rating !== undefined) dbPayload.speed_rating = parseFloat(mergedEval.speed_rating);
+        if (mergedEval.cleanliness_rating !== undefined) dbPayload.cleanliness_rating = parseFloat(mergedEval.cleanliness_rating);
+        if (mergedEval.teamwork_rating !== undefined) dbPayload.teamwork_rating = parseFloat(mergedEval.teamwork_rating);
+        dbPayload.notes = jsonNotes;
 
         try {
             const res = await withTimeout(supabaseClient.from('evaluations').update(dbPayload).eq('id', evalId), 2000);

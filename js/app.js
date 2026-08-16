@@ -536,6 +536,32 @@ function renderStationChecklist() {
 }
 
 /**
+ * Helper to update stars and text values visually in the evaluation modal
+ */
+function setStarVisualValue(targetId, val) {
+    const hiddenInput = document.getElementById(targetId);
+    if (hiddenInput) {
+        hiddenInput.value = val;
+    }
+    const container = document.querySelector(`.star-rating-input[data-rating-target="${targetId}"]`);
+    if (container) {
+        const ratingValSpan = container.querySelector('.rating-num');
+        if (ratingValSpan) {
+            ratingValSpan.textContent = `${val}/5`;
+        }
+        const stars = container.querySelectorAll('.stars i');
+        stars.forEach(s => {
+            const sVal = parseInt(s.getAttribute('data-val'));
+            if (sVal <= val) {
+                s.classList.add('active');
+            } else {
+                s.classList.remove('active');
+            }
+        });
+    }
+}
+
+/**
  * Open Head Barista Evaluation Modal (Create or Edit)
  */
 function openEvaluationModal(selectedEmployeeId = null, evalToEdit = null) {
@@ -548,22 +574,25 @@ function openEvaluationModal(selectedEmployeeId = null, evalToEdit = null) {
 
         if (modalTitle) modalTitle.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> تعديل تقرير تقييم الموظف';
 
-        document.getElementById('evalEmployeeSelect').value = evalToEdit.employee_id;
+        document.getElementById('evalEmployeeSelect').value = evalToEdit.employee_id || '';
         document.getElementById('evaluatorName').value = evalToEdit.evaluator_name || state.currentAdmin || '';
-        document.getElementById('evaluationDate').value = evalToEdit.evaluation_date;
+        document.getElementById('evaluationDate').value = evalToEdit.evaluation_date || new Date().toISOString().split('T')[0];
         document.getElementById('shiftType').value = evalToEdit.shift_type || 'صباحي';
         document.getElementById('barStation').value = evalToEdit.bar_station || 'cold';
 
         document.getElementById('quizDrinkName').value = evalToEdit.quiz_drink_name || '';
-        document.getElementById('quizRating').value = evalToEdit.quiz_rating || 5;
-
-        document.getElementById('qualityRating').value = evalToEdit.quality_rating || 5;
-        document.getElementById('speedRating').value = evalToEdit.speed_rating || 5;
-        document.getElementById('cleanlinessRating').value = evalToEdit.cleanliness_rating || 5;
-        document.getElementById('organizationRating').value = evalToEdit.organization_rating || 5;
-        document.getElementById('workMethodRating').value = evalToEdit.work_method_rating || 5;
-        document.getElementById('returnItemsRating').value = evalToEdit.return_items_rating || 5;
-        document.getElementById('teamworkRating').value = evalToEdit.teamwork_rating || 5;
+        
+        // Update all rating stars visually
+        setStarVisualValue('quizRating', evalToEdit.quiz_rating || 5);
+        setStarVisualValue('qualityRating', evalToEdit.quality_rating || 5);
+        setStarVisualValue('speedRating', evalToEdit.speed_rating || 5);
+        setStarVisualValue('cleanlinessRating', evalToEdit.cleanliness_rating || 5);
+        setStarVisualValue('organizationRating', evalToEdit.organization_rating || 5);
+        setStarVisualValue('workMethodRating', evalToEdit.work_method_rating || 5);
+        setStarVisualValue('returnItemsRating', evalToEdit.return_items_rating || 5);
+        setStarVisualValue('teamworkRating', evalToEdit.teamwork_rating || 5);
+        setStarVisualValue('groomingRating', evalToEdit.grooming_rating || 5);
+        setStarVisualValue('attendanceRating', evalToEdit.attendance_rating || 5);
 
         if (document.getElementById('espressoDoseStatus')) {
             document.getElementById('espressoDoseStatus').value = evalToEdit.espresso_dose_status || '🟢 ممتازة ومثالية (17.9g - 18g - 18.1g)';
@@ -574,11 +603,9 @@ function openEvaluationModal(selectedEmployeeId = null, evalToEdit = null) {
 
         document.getElementById('apronUniformStatus').value = evalToEdit.apronUniformStatus || 'نظيف ومرتب بالكامل';
         document.getElementById('hygieneNailsStatus').value = evalToEdit.hygieneNailsStatus || 'ممتاز وملتزم بالكامل';
-        document.getElementById('groomingRating').value = evalToEdit.grooming_rating || 5;
 
         document.getElementById('arrivalTime').value = evalToEdit.arrivalTime || '';
         document.getElementById('attendanceStatus').value = evalToEdit.attendanceStatus || 'على الوقت بالدقيقة / مبكر';
-        document.getElementById('attendanceRating').value = evalToEdit.attendance_rating || 5;
 
         document.getElementById('evalMistakes').value = evalToEdit.evalMistakes || '';
         document.getElementById('evalNotes').value = evalToEdit.notes || '';
@@ -598,6 +625,19 @@ function openEvaluationModal(selectedEmployeeId = null, evalToEdit = null) {
         document.getElementById('evaluatorName').value = state.currentAdmin || '';
         document.getElementById('evaluationDate').value = new Date().toISOString().split('T')[0];
         document.getElementById('barStation').value = 'cold';
+        
+        // Reset all rating stars visually to 5
+        setStarVisualValue('quizRating', 5);
+        setStarVisualValue('qualityRating', 5);
+        setStarVisualValue('speedRating', 5);
+        setStarVisualValue('cleanlinessRating', 5);
+        setStarVisualValue('organizationRating', 5);
+        setStarVisualValue('workMethodRating', 5);
+        setStarVisualValue('returnItemsRating', 5);
+        setStarVisualValue('teamworkRating', 5);
+        setStarVisualValue('groomingRating', 5);
+        setStarVisualValue('attendanceRating', 5);
+
         renderStationChecklist();
     }
     
