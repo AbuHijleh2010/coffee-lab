@@ -58,59 +58,63 @@ function isSupabaseConnected() {
 }
 
 /**
- * Fetch all employees (Supabase Live Cloud DB Priority)
+ * Synchronously get local employees for zero-latency instant rendering
+ */
+function getLocalEmployeesSync() {
+    if (localStorage.getItem('coffeelab_is_cleared') === 'true') {
+        return [];
+    }
+    try {
+        const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES);
+        if (raw !== null) {
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed) ? parsed : INITIAL_DEMO_EMPLOYEES;
+        }
+    } catch (e) {}
+    return INITIAL_DEMO_EMPLOYEES;
+}
+
+/**
+ * Synchronously get local evaluations for zero-latency instant rendering
+ */
+function getLocalEvaluationsSync() {
+    if (localStorage.getItem('coffeelab_is_cleared') === 'true') {
+        return [];
+    }
+    try {
+        const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS);
+        if (raw !== null) {
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed) ? parsed : INITIAL_DEMO_EVALUATIONS;
+        }
+    } catch (e) {}
+    return INITIAL_DEMO_EVALUATIONS;
+}
+
+/**
+ * Fetch all employees (Supabase Live Cloud DB with Strict 1000ms Timeout)
  */
 async function fetchEmployees() {
     if (localStorage.getItem('coffeelab_is_cleared') === 'true') {
         return [];
     }
 
-    // 1. Try querying Supabase Cloud Database first
     if (isSupabaseConnected()) {
         try {
             const res = await withTimeout(
                 supabaseClient.from('employees').select('*').order('created_at', { ascending: false }),
-                2000
+                1000
             );
             if (res && !res.error && Array.isArray(res.data)) {
-                if (res.data.length > 0) {
-                    localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(res.data));
-                    return res.data;
-                } else {
-                    // Table exists but empty: seed initial employees to Supabase Cloud DB
-                    try {
-                        await supabaseClient.from('employees').insert(INITIAL_DEMO_EMPLOYEES);
-                        localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(INITIAL_DEMO_EMPLOYEES));
-                        return INITIAL_DEMO_EMPLOYEES;
-                    } catch (seedErr) {
-                        console.warn('Seeding employees error:', seedErr);
-                    }
-                }
+                localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(res.data));
+                return res.data;
             }
         } catch (e) {
             console.warn('Supabase fetch employees fallback:', e.message);
         }
     }
 
-    // 2. Fallback to LocalStorage
-    let localEmps = [];
-    try {
-        const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES);
-        if (raw !== null) {
-            localEmps = JSON.parse(raw);
-            if (!Array.isArray(localEmps) || localEmps.length === 0) {
-                localEmps = INITIAL_DEMO_EMPLOYEES;
-                localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(INITIAL_DEMO_EMPLOYEES));
-            }
-        } else {
-            localEmps = INITIAL_DEMO_EMPLOYEES;
-            localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(INITIAL_DEMO_EMPLOYEES));
-        }
-    } catch (e) {
-        localEmps = INITIAL_DEMO_EMPLOYEES;
-    }
-
-    return localEmps;
+    return getLocalEmployeesSync();
 }
 
 /**
@@ -151,6 +155,9 @@ async function createEmployee(employeeData) {
 /**
  * Fetch all evaluations (Supabase Live Cloud DB Priority)
  */
+/**
+ * Fetch all evaluations (Supabase Live Cloud DB with Strict 1000ms Timeout)
+ */
 async function fetchEvaluations() {
     if (localStorage.getItem('coffeelab_is_cleared') === 'true') {
         return [];
@@ -160,41 +167,18 @@ async function fetchEvaluations() {
         try {
             const res = await withTimeout(
                 supabaseClient.from('evaluations').select('*').order('created_at', { ascending: false }),
-                2000
+                1000
             );
             if (res && !res.error && Array.isArray(res.data)) {
-                if (res.data.length > 0) {
-                    localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(res.data));
-                    return res.data;
-                } else {
-                    try {
-                        await supabaseClient.from('evaluations').insert(INITIAL_DEMO_EVALUATIONS);
-                        localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(INITIAL_DEMO_EVALUATIONS));
-                        return INITIAL_DEMO_EVALUATIONS;
-                    } catch (seedErr) {
-                        console.warn('Seeding evaluations error:', seedErr);
-                    }
-                }
+                localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(res.data));
+                return res.data;
             }
         } catch (e) {
             console.warn('Supabase fetch evaluations fallback:', e.message);
         }
     }
 
-    let localEvals = [];
-    try {
-        const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS);
-        if (raw !== null) {
-            localEvals = JSON.parse(raw);
-        } else {
-            localEvals = INITIAL_DEMO_EVALUATIONS;
-            localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(INITIAL_DEMO_EVALUATIONS));
-        }
-    } catch (e) {
-        localEvals = INITIAL_DEMO_EVALUATIONS;
-    }
-
-    return localEvals;
+    return getLocalEvaluationsSync();
 }
 
 /**
