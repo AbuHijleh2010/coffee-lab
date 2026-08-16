@@ -1,33 +1,37 @@
 /* ==========================================================================
-   COFFEE LAB - ULTRA ROYAL GOLD RESERVE DESIGN SYSTEM (PURE LUXURY)
+   COFFEE LAB - ROYAL SAPPHIRE & AMBER GOLD ULTRA LUXURY SYSTEM
    ========================================================================== */
 
 :root {
-    /* Color Palette - Imperial Obsidian & Metallic Royal Champagne Gold */
-    --bg-dark: #040406;
-    --bg-surface: #0a090f;
-    --bg-card: rgba(15, 14, 22, 0.86);
-    --bg-card-hover: rgba(24, 22, 34, 0.95);
+    /* Color Palette - Deep Royal Sapphire Midnight & Warm Amber Gold */
+    --bg-dark: #060913;
+    --bg-surface: #0c1224;
+    --bg-card: rgba(16, 24, 46, 0.84);
+    --bg-card-hover: rgba(24, 36, 68, 0.94);
     
-    /* Metallic Champagne Gold Tokens */
-    --gold-light: #fce09b;
-    --gold-main: #dfb15b;
-    --gold-dark: #b88528;
-    --gold-deep: #7a5412;
+    /* Sapphire & Amber Gold Accent Tokens */
+    --sapphire-light: #60a5fa;
+    --sapphire-main: #3b82f6;
+    --sapphire-deep: #1d4ed8;
 
-    --glow-gold: rgba(223, 177, 91, 0.45);
-    --glow-bright: rgba(252, 224, 155, 0.3);
+    --amber-light: #fde047;
+    --amber-gold: #fbbf24;
+    --amber-warm: #f59e0b;
+    --amber-bronze: #d97706;
+
+    --glow-sapphire: rgba(59, 130, 246, 0.45);
+    --glow-amber: rgba(251, 191, 36, 0.45);
 
     --text-main: #ffffff;
-    --text-muted: #a3a1b0;
-    --text-dim: #6c6a7c;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
 
-    --border-color: rgba(223, 177, 91, 0.25);
-    --border-highlight: rgba(252, 224, 155, 0.65);
+    --border-color: rgba(96, 165, 250, 0.22);
+    --border-highlight: rgba(251, 191, 36, 0.6);
 
     --success: #10b981;
-    --warning: #dfb15b;
-    --danger: #ef4444;
+    --warning: #fbbf24;
+    --danger: #f43f5e;
 
     /* Spacing & Radii */
     --radius-sm: 10px;
@@ -41,7 +45,7 @@
     
     --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.7);
     --shadow-md: 0 16px 45px rgba(0, 0, 0, 0.9);
-    --shadow-glow: 0 0 40px rgba(223, 177, 91, 0.35);
+    --shadow-glow: 0 0 40px rgba(59, 130, 246, 0.35);
 }
 
 /* Reset & Base Styles */
@@ -55,9 +59,9 @@ body {
     font-family: 'Tajawal', 'Readex Pro', 'Cairo', sans-serif;
     background-color: var(--bg-dark);
     background-image: 
-        radial-gradient(circle at 10% 10%, rgba(223, 177, 91, 0.16) 0%, transparent 45%),
-        radial-gradient(circle at 90% 88%, rgba(184, 133, 40, 0.14) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, rgba(12, 10, 16, 0.85) 0%, rgba(4, 4, 6, 1) 100%);
+        radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.18) 0%, transparent 48%),
+        radial-gradient(circle at 85% 85%, rgba(251, 191, 36, 0.16) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(12, 18, 36, 0.85) 0%, rgba(6, 9, 19, 1) 100%);
     background-attachment: fixed;
     color: var(--text-main);
     min-height: 100vh;
@@ -78,12 +82,12 @@ body {
     border: 1px solid var(--border-color);
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--gold-main);
+    background: var(--sapphire-main);
 }
 
-/* Main Header (Imperial Gilded Glass Header) */
+/* Main Header (Royal Sapphire Gilded Glass Header) */
 .main-header {
-    background: rgba(10, 9, 15, 0.88);
+    background: rgba(12, 18, 36, 0.88);
     backdrop-filter: blur(28px);
     -webkit-backdrop-filter: blur(28px);
     border-bottom: 1px solid var(--border-color);
@@ -115,20 +119,20 @@ body {
     width: 84px;
     height: 84px;
     object-fit: contain;
-    filter: drop-shadow(0 0 20px rgba(223, 177, 91, 0.6));
+    filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.6));
     transition: var(--transition-normal);
 }
 
 .brand-logo-img:hover {
     transform: rotate(6deg) scale(1.08);
-    filter: drop-shadow(0 0 30px rgba(252, 224, 155, 0.9));
+    filter: drop-shadow(0 0 30px rgba(251, 191, 36, 0.9));
 }
 
 .brand-text h1 {
     font-size: 1.85rem;
     font-weight: 900;
     letter-spacing: 1.2px;
-    background: linear-gradient(135deg, #ffffff 25%, var(--gold-light) 65%, var(--gold-main) 100%);
+    background: linear-gradient(135deg, #ffffff 25%, var(--sapphire-light) 65%, var(--amber-gold) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -145,17 +149,17 @@ body {
     gap: 0.8rem;
 }
 
-/* Hero Section (Atmospheric Royal Reserve Hero) */
+/* Hero Section (Atmospheric Royal Sapphire Hero) */
 .hero-section {
     position: relative;
-    background: linear-gradient(135deg, rgba(4, 4, 6, 0.95), rgba(24, 22, 34, 0.9)),
+    background: linear-gradient(135deg, rgba(6, 9, 19, 0.95), rgba(24, 36, 68, 0.9)),
                 url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1600&auto=format&fit=crop&q=80') center/cover no-repeat;
-    border: 1px solid var(--border-highlight);
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
     padding: 4rem 3rem;
     margin-bottom: 2.5rem;
     color: #ffffff;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 50px rgba(223, 177, 91, 0.2);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 50px rgba(59, 130, 246, 0.25);
     overflow: hidden;
 }
 
@@ -166,7 +170,7 @@ body {
     left: -70px;
     width: 420px;
     height: 420px;
-    background: radial-gradient(circle, rgba(252, 224, 155, 0.25) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.28) 0%, transparent 70%);
     pointer-events: none;
     animation: ambientPulse 8s infinite alternate ease-in-out;
 }
@@ -186,9 +190,9 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 0.55rem;
-    background: rgba(223, 177, 91, 0.18);
-    border: 1px solid var(--border-highlight);
-    color: var(--gold-light);
+    background: rgba(59, 130, 246, 0.18);
+    border: 1px solid rgba(96, 165, 250, 0.45);
+    color: var(--sapphire-light);
     padding: 0.45rem 1.25rem;
     border-radius: var(--radius-pill);
     font-size: 0.88rem;
@@ -196,7 +200,7 @@ body {
     letter-spacing: 1.2px;
     margin-bottom: 1.35rem;
     backdrop-filter: blur(10px);
-    box-shadow: 0 0 22px rgba(223, 177, 91, 0.3);
+    box-shadow: 0 0 22px rgba(59, 130, 246, 0.3);
 }
 
 .hero-title {
@@ -204,7 +208,7 @@ body {
     font-weight: 900;
     line-height: 1.12;
     margin-bottom: 0.9rem;
-    background: linear-gradient(135deg, #ffffff 15%, var(--gold-light) 55%, var(--gold-main) 85%, var(--gold-dark) 100%);
+    background: linear-gradient(135deg, #ffffff 15%, var(--sapphire-light) 55%, var(--amber-gold) 85%, var(--amber-warm) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     text-shadow: 0 10px 35px rgba(0, 0, 0, 0.7);
@@ -250,15 +254,15 @@ body {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold-main) 50%, var(--gold-dark) 100%);
-    color: #040406;
+    background: linear-gradient(135deg, var(--amber-gold) 0%, var(--amber-warm) 50%, var(--amber-bronze) 100%);
+    color: #060913;
     font-weight: 900;
-    box-shadow: 0 0 30px rgba(223, 177, 91, 0.45);
+    box-shadow: 0 0 30px rgba(251, 191, 36, 0.45);
 }
 .btn-primary:hover {
-    background: linear-gradient(135deg, #ffffff 0%, var(--gold-light) 60%, var(--gold-main) 100%);
+    background: linear-gradient(135deg, #ffffff 0%, var(--amber-light) 60%, var(--amber-gold) 100%);
     transform: translateY(-3px);
-    box-shadow: 0 0 45px rgba(252, 224, 155, 0.75);
+    box-shadow: 0 0 45px rgba(253, 224, 71, 0.75);
 }
 
 .btn-secondary {
@@ -268,8 +272,8 @@ body {
     backdrop-filter: blur(12px);
 }
 .btn-secondary:hover {
-    background: rgba(223, 177, 91, 0.22);
-    border-color: var(--border-highlight);
+    background: rgba(59, 130, 246, 0.22);
+    border-color: var(--sapphire-light);
     transform: translateY(-2.5px);
     box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);
 }
@@ -282,30 +286,30 @@ body {
 .btn-outline:hover {
     color: #ffffff;
     border-color: var(--border-highlight);
-    background: rgba(223, 177, 91, 0.15);
+    background: rgba(251, 191, 36, 0.15);
 }
 
 .btn-hero-white {
-    background: linear-gradient(135deg, #ffffff 0%, var(--gold-light) 50%, var(--gold-main) 100%);
-    color: #040406;
+    background: linear-gradient(135deg, var(--amber-gold) 0%, var(--amber-warm) 100%);
+    color: #060913;
     border: none;
     font-weight: 900;
-    box-shadow: 0 0 40px rgba(223, 177, 91, 0.55);
+    box-shadow: 0 0 40px rgba(251, 191, 36, 0.55);
 }
 .btn-hero-white:hover {
     transform: translateY(-3px) scale(1.03);
-    box-shadow: 0 0 55px rgba(252, 224, 155, 0.85);
+    box-shadow: 0 0 55px rgba(253, 224, 71, 0.85);
 }
 
 .btn-hero-outline {
-    background: rgba(4, 4, 6, 0.7);
+    background: rgba(6, 9, 19, 0.7);
     color: #ffffff;
-    border: 1px solid var(--border-highlight);
+    border: 1px solid var(--border-color);
     backdrop-filter: blur(14px);
 }
 .btn-hero-outline:hover {
     background: rgba(255, 255, 255, 0.2);
-    border-color: var(--gold-light);
+    border-color: var(--sapphire-light);
     transform: translateY(-2px);
 }
 
@@ -315,20 +319,20 @@ body {
 }
 
 .btn-danger-icon {
-    background: rgba(239, 68, 68, 0.12);
-    color: #f87171;
-    border: 1px solid rgba(239, 68, 68, 0.35);
+    background: rgba(244, 63, 94, 0.12);
+    color: #fb7185;
+    border: 1px solid rgba(244, 63, 94, 0.35);
     padding: 0.48rem 0.8rem;
     border-radius: var(--radius-md);
     cursor: pointer;
     transition: var(--transition-fast);
 }
 .btn-danger-icon:hover {
-    background: #ef4444;
+    background: #f43f5e;
     color: #ffffff;
-    border-color: #ef4444;
+    border-color: #f43f5e;
     transform: translateY(-2.5px);
-    box-shadow: 0 0 25px rgba(239, 68, 68, 0.6);
+    box-shadow: 0 0 25px rgba(244, 63, 94, 0.6);
 }
 
 .btn-close-banner {
@@ -350,9 +354,9 @@ body {
     font-weight: 800;
 }
 .badge-warning {
-    background: rgba(223, 177, 91, 0.22);
-    color: var(--gold-light);
-    border: 1px solid rgba(223, 177, 91, 0.5);
+    background: rgba(251, 191, 36, 0.22);
+    color: var(--amber-gold);
+    border: 1px solid rgba(251, 191, 36, 0.5);
 }
 .badge-success {
     background: rgba(16, 185, 129, 0.2);
@@ -362,8 +366,8 @@ body {
 
 /* Demo Notice Banner */
 .demo-banner {
-    background: linear-gradient(135deg, rgba(223, 177, 91, 0.18), rgba(10, 9, 15, 0.9));
-    border: 1px solid var(--border-highlight);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), rgba(12, 18, 36, 0.9));
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     padding: 1rem 1.5rem;
     margin-bottom: 2.2rem;
@@ -377,13 +381,13 @@ body {
     display: flex;
     align-items: center;
     gap: 0.9rem;
-    color: #fde68a;
+    color: #93c5fd;
     font-size: 0.95rem;
     font-weight: 600;
 }
 .demo-banner-content i {
     font-size: 1.35rem;
-    color: var(--gold-light);
+    color: var(--sapphire-light);
 }
 
 /* Stats Section */
@@ -415,7 +419,7 @@ body {
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--gold-light), var(--gold-main), var(--gold-dark));
+    background: linear-gradient(90deg, var(--sapphire-light), var(--amber-gold), var(--sapphire-main));
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -441,9 +445,9 @@ body {
     flex-shrink: 0;
     border: 1px solid transparent;
 }
-.icon-amber { background: rgba(223, 177, 91, 0.2); color: var(--gold-light); border-color: rgba(223, 177, 91, 0.45); }
-.icon-gold { background: rgba(252, 224, 155, 0.2); color: #fce09b; border-color: rgba(252, 224, 155, 0.45); }
-.icon-copper { background: rgba(184, 133, 40, 0.2); color: #dfb15b; border-color: rgba(184, 133, 40, 0.45); }
+.icon-amber { background: rgba(59, 130, 246, 0.2); color: var(--sapphire-light); border-color: rgba(59, 130, 246, 0.45); }
+.icon-gold { background: rgba(251, 191, 36, 0.2); color: #fbbf24; border-color: rgba(251, 191, 36, 0.45); }
+.icon-copper { background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-color: rgba(96, 165, 250, 0.45); }
 .icon-green { background: rgba(16, 185, 129, 0.2); color: #34d399; border-color: rgba(16, 185, 129, 0.45); }
 
 .stat-info .stat-label {
@@ -457,7 +461,7 @@ body {
     font-size: 1.8rem;
     font-weight: 900;
     color: var(--text-main);
-    background: linear-gradient(135deg, #ffffff 40%, var(--gold-light) 100%);
+    background: linear-gradient(135deg, #ffffff 40%, var(--sapphire-light) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -481,7 +485,7 @@ body {
     right: 1.4rem;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--gold-light);
+    color: var(--sapphire-light);
     font-size: 1.15rem;
 }
 .search-box input {
@@ -498,8 +502,8 @@ body {
 }
 .search-box input:focus {
     outline: none;
-    border-color: var(--gold-light);
-    box-shadow: 0 0 25px rgba(223, 177, 91, 0.4);
+    border-color: var(--sapphire-light);
+    box-shadow: 0 0 25px rgba(59, 130, 246, 0.4);
 }
 
 .custom-select, .custom-input, .custom-textarea {
@@ -515,8 +519,8 @@ body {
 }
 .custom-select:focus, .custom-input:focus, .custom-textarea:focus {
     outline: none;
-    border-color: var(--gold-light);
-    box-shadow: 0 0 25px rgba(223, 177, 91, 0.4);
+    border-color: var(--sapphire-light);
+    box-shadow: 0 0 25px rgba(59, 130, 246, 0.4);
 }
 
 /* Employees Section & Grid */
@@ -566,7 +570,7 @@ body {
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--gold-light), var(--gold-main), var(--gold-dark));
+    background: linear-gradient(90deg, var(--sapphire-light), var(--amber-gold), var(--sapphire-main));
     opacity: 0;
     transition: var(--transition-fast);
 }
@@ -597,8 +601,8 @@ body {
     height: 72px;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid var(--gold-main);
-    box-shadow: 0 0 20px rgba(223, 177, 91, 0.5);
+    border: 3px solid var(--sapphire-main);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
 }
 
 .emp-role-badge {
@@ -606,9 +610,9 @@ body {
     bottom: -6px;
     right: 50%;
     transform: translateX(50%);
-    background: rgba(10, 9, 15, 0.95);
+    background: rgba(12, 18, 36, 0.95);
     border: 1px solid var(--border-highlight);
-    color: var(--gold-light);
+    color: var(--amber-gold);
     font-size: 0.7rem;
     font-weight: 800;
     padding: 0.2rem 0.6rem;
@@ -630,7 +634,7 @@ body {
 
 /* Rating Summary Box inside card */
 .rating-bar-group {
-    background: rgba(4, 4, 6, 0.55);
+    background: rgba(6, 9, 19, 0.55);
     border-radius: var(--radius-md);
     padding: 0.95rem 1.15rem;
     margin-bottom: 1.4rem;
@@ -648,7 +652,7 @@ body {
 .rating-bar-group .score-num {
     font-size: 1.4rem;
     font-weight: 900;
-    color: var(--gold-light);
+    color: var(--amber-gold);
 }
 
 .evaluations-count {
@@ -672,7 +676,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(2, 2, 4, 0.92);
+    background: rgba(3, 5, 12, 0.92);
     backdrop-filter: blur(20px);
     z-index: 1000;
     align-items: center;
@@ -693,7 +697,7 @@ body {
 
 .modal-content {
     background: var(--bg-surface);
-    border: 1px solid var(--border-highlight);
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
     width: 100%;
     max-width: 580px;
@@ -712,7 +716,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(223, 177, 91, 0.1);
+    background: rgba(59, 130, 246, 0.1);
 }
 .modal-header h2 {
     font-size: 1.3rem;
@@ -720,7 +724,7 @@ body {
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    color: var(--gold-light);
+    color: var(--sapphire-light);
 }
 
 .modal-close {
@@ -747,7 +751,7 @@ body {
     display: flex;
     justify-content: flex-end;
     gap: 0.9rem;
-    background: rgba(4, 4, 6, 0.4);
+    background: rgba(6, 9, 19, 0.4);
 }
 
 .form-group {
@@ -777,7 +781,7 @@ body {
 
 /* Criteria Inputs */
 .rating-criteria-container {
-    background: rgba(4, 4, 6, 0.5);
+    background: rgba(6, 9, 19, 0.5);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     padding: 1.45rem;
@@ -787,7 +791,7 @@ body {
 }
 .rating-criteria-container h3 {
     font-size: 1rem;
-    color: var(--gold-light);
+    color: var(--sapphire-light);
     margin-bottom: 0.65rem;
     font-weight: 900;
 }
@@ -830,12 +834,12 @@ body {
     font-size: 1.3rem;
 }
 .star-rating-input .stars i.active {
-    color: var(--gold-light);
-    text-shadow: 0 0 12px rgba(252, 224, 155, 0.7);
+    color: var(--amber-gold);
+    text-shadow: 0 0 12px rgba(251, 191, 36, 0.7);
 }
 .star-rating-input .rating-num {
     font-weight: 900;
-    color: var(--gold-light);
+    color: var(--amber-gold);
     min-width: 36px;
 }
 
@@ -844,7 +848,7 @@ body {
     display: flex;
     align-items: center;
     gap: 1.7rem;
-    background: rgba(4, 4, 6, 0.55);
+    background: rgba(6, 9, 19, 0.55);
     padding: 1.45rem;
     border-radius: var(--radius-md);
     border: 1px solid var(--border-color);
@@ -854,8 +858,8 @@ body {
     height: 88px;
     border-radius: 50%;
     object-fit: cover;
-    border: 3.5px solid var(--gold-main);
-    box-shadow: 0 0 25px rgba(223, 177, 91, 0.5);
+    border: 3.5px solid var(--sapphire-main);
+    box-shadow: 0 0 25px rgba(59, 130, 246, 0.5);
 }
 
 .history-timeline {
@@ -865,8 +869,8 @@ body {
     margin-top: 1.2rem;
 }
 .history-item {
-    background: rgba(4, 4, 6, 0.4);
-    border-right: 4px solid var(--gold-main);
+    background: rgba(6, 9, 19, 0.4);
+    border-right: 4px solid var(--sapphire-main);
     border-radius: var(--radius-sm);
     padding: 1.2rem 1.45rem;
     border: 1px solid rgba(255, 255, 255, 0.07);
@@ -909,8 +913,8 @@ body {
 }
 .toast {
     background: var(--bg-surface);
-    border: 1px solid var(--border-highlight);
-    border-right: 4px solid var(--gold-main);
+    border: 1px solid var(--border-color);
+    border-right: 4px solid var(--sapphire-main);
     padding: 0.95rem 1.4rem;
     border-radius: var(--radius-md);
     color: #ffffff;
@@ -946,15 +950,15 @@ body {
 
 /* Head Barista Dynamic Checklists & Station Evaluation Styles */
 .highlight-box {
-    background: rgba(223, 177, 91, 0.16);
-    border: 1px solid rgba(223, 177, 91, 0.4);
+    background: rgba(59, 130, 246, 0.16);
+    border: 1px solid rgba(59, 130, 246, 0.4);
     padding: 1.15rem;
     border-radius: var(--radius-md);
 }
 
 .highlight-danger-box {
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.35);
+    background: rgba(244, 63, 94, 0.1);
+    border: 1px solid rgba(244, 63, 94, 0.35);
     padding: 1.15rem;
     border-radius: var(--radius-md);
 }
@@ -965,7 +969,7 @@ body {
 }
 
 .checklist-card {
-    background: rgba(4, 4, 6, 0.5);
+    background: rgba(6, 9, 19, 0.5);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     padding: 1.45rem;
@@ -973,7 +977,7 @@ body {
 
 .checklist-card h4 {
     font-size: 1rem;
-    color: var(--gold-light);
+    color: var(--sapphire-light);
     margin-bottom: 1.15rem;
     font-weight: 900;
     display: flex;
@@ -1003,18 +1007,18 @@ body {
 
 .checklist-item:hover {
     background: rgba(255, 255, 255, 0.09);
-    border-color: rgba(223, 177, 91, 0.5);
+    border-color: rgba(59, 130, 246, 0.5);
 }
 
 .checklist-item input[type="checkbox"] {
     width: 20px;
     height: 20px;
-    accent-color: #dfb15b;
+    accent-color: #3b82f6;
     cursor: pointer;
 }
 
 .criteria-card-box {
-    background: rgba(15, 14, 22, 0.75);
+    background: rgba(16, 24, 46, 0.75);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-md);
     padding: 1.45rem;
@@ -1023,7 +1027,7 @@ body {
 
 .criteria-card-box h4 {
     font-size: 1rem;
-    color: #38bdf8;
+    color: #60a5fa;
     margin-bottom: 0.95rem;
     font-weight: 800;
 }
@@ -1033,9 +1037,9 @@ body {
     align-items: center;
     gap: 0.5rem;
     padding: 0.38rem 0.9rem;
-    background: rgba(223, 177, 91, 0.2);
-    color: var(--gold-light);
-    border: 1px solid rgba(223, 177, 91, 0.45);
+    background: rgba(59, 130, 246, 0.2);
+    color: var(--sapphire-light);
+    border: 1px solid rgba(59, 130, 246, 0.45);
     border-radius: 20px;
     font-size: 0.86rem;
     font-weight: 800;
@@ -1043,8 +1047,8 @@ body {
 }
 
 .mistakes-box {
-    background: rgba(239, 68, 68, 0.14);
-    border-right: 4px solid #ef4444;
+    background: rgba(244, 63, 94, 0.14);
+    border-right: 4px solid #f43f5e;
     padding: 0.9rem 1.15rem;
     border-radius: 8px;
     margin-top: 0.9rem;
@@ -1053,13 +1057,13 @@ body {
 }
 
 .quiz-box {
-    background: rgba(56, 189, 248, 0.14);
-    border-right: 4px solid #38bdf8;
+    background: rgba(96, 165, 250, 0.14);
+    border-right: 4px solid #60a5fa;
     padding: 0.9rem 1.15rem;
     border-radius: 8px;
     margin-top: 0.7rem;
     font-size: 0.92rem;
-    color: #bae6fd;
+    color: #bfdbfe;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1068,8 +1072,8 @@ body {
 }
 
 .notes-box {
-    background: rgba(4, 4, 6, 0.45);
-    border-right: 4px solid var(--gold-main);
+    background: rgba(6, 9, 19, 0.45);
+    border-right: 4px solid var(--sapphire-main);
     padding: 0.9rem 1.15rem;
     border-radius: 8px;
     margin-top: 0.9rem;
@@ -1078,7 +1082,7 @@ body {
 }
 
 .checklist-summary-box {
-    background: rgba(4, 4, 6, 0.35);
+    background: rgba(6, 9, 19, 0.35);
     padding: 0.9rem 1.15rem;
     border-radius: 8px;
     margin-top: 0.9rem;
@@ -1108,8 +1112,8 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 0.75rem;
-    background: rgba(223, 177, 91, 0.18);
-    border: 1px solid rgba(223, 177, 91, 0.5);
+    background: rgba(59, 130, 246, 0.18);
+    border: 1px solid rgba(59, 130, 246, 0.5);
     padding: 0.45rem 1rem;
     border-radius: 20px;
     backdrop-filter: blur(12px);
@@ -1117,7 +1121,7 @@ body {
 
 .badge-admin-name {
     font-size: 0.9rem;
-    color: var(--gold-light);
+    color: var(--sapphire-light);
     font-weight: 800;
 }
 
@@ -1148,6 +1152,6 @@ body {
 
 .preset-avatar-thumb:hover {
     transform: scale(1.2);
-    border-color: var(--gold-light);
-    box-shadow: 0 0 15px rgba(252, 224, 155, 0.8);
+    border-color: var(--sapphire-light);
+    box-shadow: 0 0 15px rgba(96, 165, 250, 0.8);
 }
