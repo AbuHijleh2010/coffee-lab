@@ -86,11 +86,9 @@ function getLocalEvaluationsSync() {
 }
 
 /**
- * Fetch all employees (Merged Live Cloud DB & Instant Cache)
+ * Fetch all employees (Supabase Live Cloud DB Priority)
  */
 async function fetchEmployees() {
-    const local = getLocalEmployeesSync();
-
     if (isSupabaseConnected()) {
         try {
             const res = await withTimeout(
@@ -98,22 +96,15 @@ async function fetchEmployees() {
                 1500
             );
             if (res && !res.error && Array.isArray(res.data)) {
-                const empMap = new Map();
-                // Cloud rows take precedence
-                res.data.forEach(e => { if (e && e.id) empMap.set(e.id, e); });
-                // Preserve local newly added employees if cloud hasn't caught up yet
-                local.forEach(e => { if (e && e.id && !empMap.has(e.id)) empMap.set(e.id, e); });
-
-                const merged = Array.from(empMap.values());
-                localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(merged));
-                return merged;
+                localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(res.data));
+                return res.data;
             }
         } catch (e) {
             console.warn('Supabase fetch employees fallback:', e.message);
         }
     }
 
-    return local;
+    return getLocalEmployeesSync();
 }
 
 /**
@@ -176,11 +167,9 @@ async function createEmployee(employeeData) {
 }
 
 /**
- * Fetch all evaluations (Merged Live Cloud DB & Instant Cache)
+ * Fetch all evaluations (Supabase Live Cloud DB Priority)
  */
 async function fetchEvaluations() {
-    const local = getLocalEvaluationsSync();
-
     if (isSupabaseConnected()) {
         try {
             const res = await withTimeout(
@@ -188,20 +177,15 @@ async function fetchEvaluations() {
                 1500
             );
             if (res && !res.error && Array.isArray(res.data)) {
-                const evalMap = new Map();
-                res.data.forEach(ev => { if (ev && ev.id) evalMap.set(ev.id, ev); });
-                local.forEach(ev => { if (ev && ev.id && !evalMap.has(ev.id)) evalMap.set(ev.id, ev); });
-
-                const merged = Array.from(evalMap.values());
-                localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(merged));
-                return merged;
+                localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(res.data));
+                return res.data;
             }
         } catch (e) {
             console.warn('Supabase fetch evaluations fallback:', e.message);
         }
     }
 
-    return local;
+    return getLocalEvaluationsSync();
 }
 
 /**
