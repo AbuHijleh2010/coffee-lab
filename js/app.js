@@ -1105,3 +1105,142 @@ function showToast(message, type = 'info') {
         setTimeout(() => toast.remove(), 300);
     }, 3500);
 }
+
+/**
+ * Open Backup & Mobile Data Transfer Modal
+ */
+function openBackupModal() {
+    openModal('backupModal');
+}
+
+/**
+ * Export Current Employees and Evaluations to JSON File
+ */
+function exportDataToFile() {
+    try {
+        const backupData = {
+            app: 'CoffeeLab',
+            version: '5.0',
+            exported_at: new Date().toISOString(),
+            employees: state.employees,
+            evaluations: state.evaluations
+        };
+
+        const jsonStr = JSON.stringify(backupData, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `CoffeeLab_Backup_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        showToast('تم تنزيل ملف النسخة الاحتياطية بنجاح!', 'success');
+    } catch (err) {
+        console.error('Export error:', err);
+        showToast('حدث خطأ أثناء تصدير البيانات', 'danger');
+    }
+}
+
+/**
+ * Copy Data Code to Clipboard for quick WhatsApp sharing
+ */
+function copyDataCodeToClipboard() {
+    try {
+        const backupData = {
+            app: 'CoffeeLab',
+            version: '5.0',
+            exported_at: new Date().toISOString(),
+            employees: state.employees,
+            evaluations: state.evaluations
+        };
+
+        const jsonStr = JSON.stringify(backupData);
+        navigator.clipboard.writeText(jsonStr).then(() => {
+            showToast('تم نسخ كود البيانات! يمكنك الآن إرساله لواتساب تلفونك.', 'success');
+        }).catch(() => {
+            const textarea = document.createElement('textarea');
+            textarea.value = jsonStr;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showToast('تم نسخ كود البيانات! قم بإرساله لواتساب تلفونك.', 'success');
+        });
+    } catch (err) {
+        showToast('حدث خطأ أثناء نسخ البيانات', 'danger');
+    }
+}
+
+/**
+ * Handle JSON File Import
+ */
+function handleImportJsonFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const parsed = JSON.parse(e.target.result);
+            applyImportedData(parsed);
+        } catch (err) {
+            showToast('الملف غير صالح أو التنسيق غير صحيح', 'danger');
+        }
+    };
+    reader.readAsText(file);
+}
+
+/**
+ * Handle Text Code Import from Textarea
+ */
+function handleImportTextCode() {
+    const textarea = document.getElementById('importJsonTextarea');
+    if (!textarea || !textarea.value.trim()) {
+        showToast('يرجى لصق كود البيانات أولاً في الصندوق المخصص', 'warning');
+        return;
+    }
+
+    try {
+        const parsed = JSON.parse(textarea.value.trim());
+        applyImportedData(parsed);
+    } catch (err) {
+        showToast('الكود الملصق غير صالح، يرجى التأكد من نسخ كود البيانات كاملاً', 'danger');
+    }
+}
+
+/**
+ * Apply Imported Data to LocalStorage and Refresh
+ */
+async function applyImportedData(parsedData) {
+    if (!parsedData || typeof parsedData !== 'object') {
+        showToast('بيانات غير صحيحة!', 'danger');
+        return;
+    }
+
+    const emps = Array.isArray(parsedData.employees) ? parsedData.employees : [];
+    const evals = Array.isArray(parsedData.evaluations) ? parsedData.evaluations : [];
+
+    if (emps.length === 0 && evals.length === 0) {
+        showToast('الملف/الكود لا يحتوي على موظفين أو تقييمات!', 'warning');
+        return;
+    }
+
+    try {
+        localStorage.removeItem('coffeelab_is_cleared');
+        localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(emps));
+        localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(evals));
+
+        showToast(`تم استيراد ${emps.length} موظف و ${evals.length} تقييم بنجاح!`, 'success');
+        closeModal('backupModal');
+
+        await refreshAppData();
+    } catch (err) {
+        console.error('Apply import error:', err);
+        showToast('حدث خطأ أثناء تطبيق البيانات المستوردة', 'danger');
+    }
+}
+
