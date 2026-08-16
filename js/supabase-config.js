@@ -275,7 +275,11 @@ async function updateEvaluation(evalId, evalData) {
         if (evalData.shift_time !== undefined) dbPayload.shift_time = evalData.shift_time;
         if (evalData.notes !== undefined) dbPayload.notes = evalData.notes;
 
-        withTimeout(supabaseClient.from('evaluations').update(dbPayload).eq('id', evalId), 1500).catch(() => {});
+        try {
+            await withTimeout(supabaseClient.from('evaluations').update(dbPayload).eq('id', evalId), 1500);
+        } catch (err) {
+            console.warn('Supabase update evaluation error:', err.message);
+        }
     }
 
     return true;
@@ -296,7 +300,11 @@ async function deleteSingleEvaluation(evalId) {
     }
 
     if (isSupabaseConnected()) {
-        withTimeout(supabaseClient.from('evaluations').delete().eq('id', evalId), 1500).catch(() => {});
+        try {
+            await withTimeout(supabaseClient.from('evaluations').delete().eq('id', evalId), 1500);
+        } catch (err) {
+            console.warn('Supabase delete evaluation error:', err.message);
+        }
     }
 
     return true;
@@ -387,7 +395,11 @@ async function updateEmployee(employeeId, employeeData) {
         if (employeeData.avatar_url !== undefined || employeeData.avatar !== undefined) {
             dbPayload.avatar = employeeData.avatar_url || employeeData.avatar || '';
         }
-        withTimeout(supabaseClient.from('employees').update(dbPayload).eq('id', employeeId), 1500).catch(() => {});
+        try {
+            await withTimeout(supabaseClient.from('employees').update(dbPayload).eq('id', employeeId), 1500);
+        } catch (err) {
+            console.warn('Supabase update employee error:', err.message);
+        }
     }
 
     return true;
