@@ -11,27 +11,55 @@ const STORAGE_KEYS = {
 
 let supabaseClient = null;
 
-// Initial Seed Data for fresh live visitors
+// Initial Seed Data for fresh live visitors (User's Exact Team Members)
 const INITIAL_DEMO_EMPLOYEES = [
     {
-        id: 'emp_demo_1',
-        name: 'أحمد محمود الخليل',
-        role: 'Head Barista (هيد باريستا)',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80',
+        id: 'emp_1',
+        name: 'عمرو ابو حجلة',
+        role: 'Head Barista',
+        avatar: '',
         created_at: new Date().toISOString()
     },
     {
-        id: 'emp_demo_2',
-        name: 'مجد عمر التميمي',
-        role: 'Senior Barista (باريستا محترف)',
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80',
+        id: 'emp_2',
+        name: 'أمير',
+        role: 'Barista',
+        avatar: '',
         created_at: new Date().toISOString()
     },
     {
-        id: 'emp_demo_3',
-        name: 'سارة خالد النجار',
-        role: 'Barista (باريستا)',
-        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&auto=format&fit=crop&q=80',
+        id: 'emp_3',
+        name: 'زيد عصفور',
+        role: 'Barista',
+        avatar: '',
+        created_at: new Date().toISOString()
+    },
+    {
+        id: 'emp_4',
+        name: 'يحيى ابو مفرح',
+        role: 'Barista',
+        avatar: '',
+        created_at: new Date().toISOString()
+    },
+    {
+        id: 'emp_5',
+        name: 'تامر',
+        role: 'Barista',
+        avatar: '',
+        created_at: new Date().toISOString()
+    },
+    {
+        id: 'emp_6',
+        name: 'اسماعيل مريوع',
+        role: 'Junior Barista',
+        avatar: '',
+        created_at: new Date().toISOString()
+    },
+    {
+        id: 'emp_7',
+        name: 'وائل الفار',
+        role: 'Barista',
+        avatar: '',
         created_at: new Date().toISOString()
     }
 ];
@@ -105,6 +133,10 @@ async function fetchEmployees() {
         const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES);
         if (raw !== null) {
             localEmps = JSON.parse(raw);
+            if (!Array.isArray(localEmps) || localEmps.length === 0) {
+                localEmps = INITIAL_DEMO_EMPLOYEES;
+                localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(INITIAL_DEMO_EMPLOYEES));
+            }
         } else {
             // First time visit on this domain: seed default employees!
             localEmps = INITIAL_DEMO_EMPLOYEES;
