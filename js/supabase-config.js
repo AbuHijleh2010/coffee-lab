@@ -5,8 +5,8 @@
 const STORAGE_KEYS = {
     SUPABASE_URL: 'coffeelab_supabase_url',
     SUPABASE_KEY: 'coffeelab_supabase_key',
-    DEMO_EMPLOYEES: 'coffeelab_demo_employees_v1',
-    DEMO_EVALUATIONS: 'coffeelab_demo_evaluations_v1'
+    DEMO_EMPLOYEES: 'coffeelab_demo_employees_v5',
+    DEMO_EVALUATIONS: 'coffeelab_demo_evaluations_v5'
 };
 
 let supabaseClient = null;
@@ -66,17 +66,17 @@ const INITIAL_DEMO_EMPLOYEES = [
 
 const INITIAL_DEMO_EVALUATIONS = [
     {
-        id: 'eval_demo_1',
-        employee_id: 'emp_demo_1',
+        id: 'eval_1',
+        employee_id: 'emp_1',
         evaluator_name: 'إدارة الهيد بار',
         hygiene: 5,
         apron: 5,
         nails: 5,
         punctuality: 5,
-        shift_time: 'الالتزام الكامل بالشفت وتدريب الفريق',
+        shift_time: 'التزام تام بإدارة الفريق والبار',
         speed: 5,
         quality: 5,
-        notes: 'أداء ممتاز جداً والالتزام كامل بأعلى معايير كوفي لاب.',
+        notes: 'قائد فريق ممتاز والالتزام كامل بأعلى معايير كوفي لاب.',
         created_at: new Date().toISOString()
     }
 ];
