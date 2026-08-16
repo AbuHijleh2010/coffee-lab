@@ -146,39 +146,29 @@ async function createEmployee(employeeData) {
         console.error('Error saving to localStorage:', err);
     }
 
-    // 2. Cloud insert with UUID & correct avatar_url column
+    // 2. Cloud insert with correct UUID and matching 'avatar' column
     if (isSupabaseConnected()) {
+        const dbPayload = {
+            id: newEmp.id,
+            name: newEmp.name,
+            role: newEmp.role,
+            avatar: avatarVal,
+            created_at: newEmp.created_at
+        };
         try {
-            const payload1 = {
-                id: newEmp.id,
-                name: newEmp.name,
-                role: newEmp.role,
-                avatar_url: avatarVal,
-                created_at: newEmp.created_at
-            };
-            const res1 = await supabaseClient.from('employees').insert([payload1]);
-
-            if (res1.error) {
-                console.warn('Payload 1 error, trying fallback without avatar_url:', res1.error.message);
-                const payload2 = {
+            const res = await supabaseClient.from('employees').insert([dbPayload]);
+            if (res.error) {
+                console.warn('Supabase primary insert failed, trying fallback without avatar:', res.error.message);
+                const fallbackPayload = {
                     id: newEmp.id,
                     name: newEmp.name,
                     role: newEmp.role,
                     created_at: newEmp.created_at
                 };
-                const res2 = await supabaseClient.from('employees').insert([payload2]);
-
-                if (res2.error) {
-                    console.warn('Payload 2 error, trying auto UUID generation:', res2.error.message);
-                    const payload3 = {
-                        name: newEmp.name,
-                        role: newEmp.role
-                    };
-                    await supabaseClient.from('employees').insert([payload3]);
-                }
+                await supabaseClient.from('employees').insert([fallbackPayload]);
             }
         } catch (e) {
-            console.warn('Supabase insert employee note:', e.message);
+            console.warn('Supabase insert employee error:', e.message);
         }
     }
 
@@ -369,8 +359,14 @@ async function deleteEmployee(employeeId) {
     }
 
     if (isSupabaseConnected()) {
-        withTimeout(supabaseClient.from('employees').delete().eq('id', employeeId), 1500).catch(() => {});
-        withTimeout(supabaseClient.from('evaluations').delete().eq('employee_id', employeeId), 1500).catch(() => {});
+        try {
+            // Delete child evaluations first to satisfy foreign key constraints
+            await supabaseClient.from('evaluations').delete().eq('employee_id', employeeId);
+            // Then delete parent employee row
+            await supabaseClient.from('employees').delete().eq('id', employeeId);
+        } catch (err) {
+            console.warn('Supabase delete employee error:', err.message);
+        }
     }
 
     return true;
