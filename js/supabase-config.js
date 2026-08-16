@@ -11,9 +11,47 @@ const STORAGE_KEYS = {
 
 let supabaseClient = null;
 
-// Initial Seed Data (Empty for fresh live start)
-const INITIAL_DEMO_EMPLOYEES = [];
-const INITIAL_DEMO_EVALUATIONS = [];
+// Initial Seed Data for fresh live visitors
+const INITIAL_DEMO_EMPLOYEES = [
+    {
+        id: 'emp_demo_1',
+        name: 'أحمد محمود الخليل',
+        role: 'Head Barista (هيد باريستا)',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80',
+        created_at: new Date().toISOString()
+    },
+    {
+        id: 'emp_demo_2',
+        name: 'مجد عمر التميمي',
+        role: 'Senior Barista (باريستا محترف)',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80',
+        created_at: new Date().toISOString()
+    },
+    {
+        id: 'emp_demo_3',
+        name: 'سارة خالد النجار',
+        role: 'Barista (باريستا)',
+        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&auto=format&fit=crop&q=80',
+        created_at: new Date().toISOString()
+    }
+];
+
+const INITIAL_DEMO_EVALUATIONS = [
+    {
+        id: 'eval_demo_1',
+        employee_id: 'emp_demo_1',
+        evaluator_name: 'إدارة الهيد بار',
+        hygiene: 5,
+        apron: 5,
+        nails: 5,
+        punctuality: 5,
+        shift_time: 'الالتزام الكامل بالشفت وتدريب الفريق',
+        speed: 5,
+        quality: 5,
+        notes: 'أداء ممتاز جداً والالتزام كامل بأعلى معايير كوفي لاب.',
+        created_at: new Date().toISOString()
+    }
+];
 
 // Helper function to prevent network hangs with a strict 800ms timeout
 function withTimeout(promise, ms = 800) {
@@ -65,9 +103,15 @@ async function fetchEmployees() {
     let localEmps = [];
     try {
         const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES);
-        localEmps = raw ? JSON.parse(raw) : [];
+        if (raw !== null) {
+            localEmps = JSON.parse(raw);
+        } else {
+            // First time visit on this domain: seed default employees!
+            localEmps = INITIAL_DEMO_EMPLOYEES;
+            localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(INITIAL_DEMO_EMPLOYEES));
+        }
     } catch (e) {
-        localEmps = [];
+        localEmps = INITIAL_DEMO_EMPLOYEES;
     }
 
     // Only query Supabase if local store has never been set
@@ -135,9 +179,14 @@ async function fetchEvaluations() {
     let localEvals = [];
     try {
         const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS);
-        localEvals = raw ? JSON.parse(raw) : [];
+        if (raw !== null) {
+            localEvals = JSON.parse(raw);
+        } else {
+            localEvals = INITIAL_DEMO_EVALUATIONS;
+            localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(INITIAL_DEMO_EVALUATIONS));
+        }
     } catch (e) {
-        localEvals = [];
+        localEvals = INITIAL_DEMO_EVALUATIONS;
     }
 
     return localEvals;
