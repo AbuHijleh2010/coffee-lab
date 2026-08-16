@@ -265,18 +265,27 @@ async function updateEvaluation(evalId, evalData) {
     if (isSupabaseConnected()) {
         const dbPayload = {};
         if (evalData.evaluator_name !== undefined) dbPayload.evaluator_name = evalData.evaluator_name;
+        if (evalData.evaluation_date !== undefined) dbPayload.evaluation_date = evalData.evaluation_date;
         if (evalData.rating !== undefined) dbPayload.rating = parseFloat(evalData.rating);
-        if (evalData.hygiene !== undefined) dbPayload.hygiene = parseFloat(evalData.hygiene);
-        if (evalData.apron !== undefined) dbPayload.apron = parseFloat(evalData.apron);
-        if (evalData.nails !== undefined) dbPayload.nails = parseFloat(evalData.nails);
-        if (evalData.punctuality !== undefined) dbPayload.punctuality = parseFloat(evalData.punctuality);
-        if (evalData.speed !== undefined) dbPayload.speed = parseFloat(evalData.speed);
-        if (evalData.quality !== undefined) dbPayload.quality = parseFloat(evalData.quality);
-        if (evalData.shift_time !== undefined) dbPayload.shift_time = evalData.shift_time;
+        
+        // Match actual database columns (suffix _rating)
+        if (evalData.quality_rating !== undefined) dbPayload.quality_rating = parseFloat(evalData.quality_rating);
+        if (evalData.speed_rating !== undefined) dbPayload.speed_rating = parseFloat(evalData.speed_rating);
+        if (evalData.cleanliness_rating !== undefined) dbPayload.cleanliness_rating = parseFloat(evalData.cleanliness_rating);
+        if (evalData.teamwork_rating !== undefined) dbPayload.teamwork_rating = parseFloat(evalData.teamwork_rating);
         if (evalData.notes !== undefined) dbPayload.notes = evalData.notes;
 
         try {
-            await withTimeout(supabaseClient.from('evaluations').update(dbPayload).eq('id', evalId), 1500);
+            const res = await withTimeout(supabaseClient.from('evaluations').update(dbPayload).eq('id', evalId), 2000);
+            if (res && res.error) {
+                console.warn('Supabase update evaluation failed, trying fallback with only primary columns:', res.error.message);
+                const fallbackPayload = {
+                    evaluator_name: dbPayload.evaluator_name || '',
+                    rating: dbPayload.rating || 5,
+                    notes: dbPayload.notes || ''
+                };
+                await withTimeout(supabaseClient.from('evaluations').update(fallbackPayload).eq('id', evalId), 2000);
+            }
         } catch (err) {
             console.warn('Supabase update evaluation error:', err.message);
         }
@@ -389,14 +398,30 @@ async function updateEmployee(employeeId, employeeData) {
     }
 
     if (isSupabaseConnected()) {
-        const dbPayload = {};
-        if (employeeData.name !== undefined) dbPayload.name = employeeData.name;
-        if (employeeData.role !== undefined) dbPayload.role = employeeData.role;
-        if (employeeData.avatar_url !== undefined || employeeData.avatar !== undefined) {
-            dbPayload.avatar = employeeData.avatar_url || employeeData.avatar || '';
-        }
+        const basePayload = {};
+        if (employeeData.name !== undefined) basePayload.name = employeeData.name;
+        if (employeeData.role !== undefined) basePayload.role = employeeData.role;
+
+        const avatarVal = employeeData.avatar_url || employeeData.avatar || '';
+        const payloadWithAvatar = { ...basePayload, avatar: avatarVal };
+
         try {
-            await withTimeout(supabaseClient.from('employees').update(dbPayload).eq('id', employeeId), 1500);
+            // Try updating with avatar column first
+            const res = await withTimeout(
+                supabaseClient.from('employees').update(payloadWithAvatar).eq('id', employeeId),
+                2000
+            );
+            if (res && res.error) {
+                console.warn('Supabase update with avatar failed, trying fallback without avatar:', res.error.message);
+                // Fallback: update only name and role
+                const fallbackRes = await withTimeout(
+                    supabaseClient.from('employees').update(basePayload).eq('id', employeeId),
+                    2000
+                );
+                if (fallbackRes && fallbackRes.error) {
+                    console.error('Supabase fallback update failed:', fallbackRes.error.message);
+                }
+            }
         } catch (err) {
             console.warn('Supabase update employee error:', err.message);
         }
