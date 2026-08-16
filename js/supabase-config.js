@@ -5,65 +5,14 @@
 const STORAGE_KEYS = {
     SUPABASE_URL: 'coffeelab_supabase_url',
     SUPABASE_KEY: 'coffeelab_supabase_key',
-    DEMO_EMPLOYEES: 'coffeelab_demo_employees_v7',
-    DEMO_EVALUATIONS: 'coffeelab_demo_evaluations_v7'
+    DEMO_EMPLOYEES: 'coffeelab_demo_employees_v8',
+    DEMO_EVALUATIONS: 'coffeelab_demo_evaluations_v8'
 };
 
 let supabaseClient = null;
 
-// Initial Seed Data for fresh live visitors (User's Exact Team Members)
-const INITIAL_DEMO_EMPLOYEES = [
-    {
-        id: 'emp_1',
-        name: 'عمرو ابو حجلة',
-        role: 'Head Barista',
-        avatar: '',
-        created_at: new Date().toISOString()
-    },
-    {
-        id: 'emp_2',
-        name: 'أمير',
-        role: 'Barista',
-        avatar: '',
-        created_at: new Date().toISOString()
-    },
-    {
-        id: 'emp_3',
-        name: 'زيد عصفور',
-        role: 'Barista',
-        avatar: '',
-        created_at: new Date().toISOString()
-    },
-    {
-        id: 'emp_4',
-        name: 'يحيى ابو مفرح',
-        role: 'Barista',
-        avatar: '',
-        created_at: new Date().toISOString()
-    },
-    {
-        id: 'emp_5',
-        name: 'تامر',
-        role: 'Barista',
-        avatar: '',
-        created_at: new Date().toISOString()
-    },
-    {
-        id: 'emp_6',
-        name: 'اسماعيل مريوع',
-        role: 'Junior Barista',
-        avatar: '',
-        created_at: new Date().toISOString()
-    },
-    {
-        id: 'emp_7',
-        name: 'وائل الفار',
-        role: 'Barista',
-        avatar: '',
-        created_at: new Date().toISOString()
-    }
-];
-
+// Initial Seed Data for fresh live visitors (Clean Zero State)
+const INITIAL_DEMO_EMPLOYEES = [];
 const INITIAL_DEMO_EVALUATIONS = [];
 
 // Helper function to prevent network hangs with a strict 800ms timeout
