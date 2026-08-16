@@ -1271,3 +1271,316 @@ body {
 .badge-pill-refill { background: rgba(56, 189, 248, 0.18); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.4); }
 .badge-pill-dirty { background: rgba(239, 68, 68, 0.18); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }
 
+/* ==========================================================================
+   MOBILE & TABLET RESPONSIVE SYSTEM (Mobile First Touch & UI Optimization)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    /* 1. Header & Navigation */
+    .main-header {
+        padding: 0.75rem 0;
+    }
+    
+    .header-container {
+        padding: 0 0.85rem;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.85rem;
+        text-align: center;
+    }
+    
+    .brand {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    
+    .brand-logo-img {
+        width: 65px;
+        height: 65px;
+    }
+    
+    .brand-text h1 {
+        font-size: 1.45rem;
+    }
+    
+    .brand-text span {
+        font-size: 0.78rem;
+    }
+    
+    .nav-actions {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .nav-actions .btn {
+        flex: 1 1 auto;
+        min-width: 120px;
+        justify-content: center;
+        padding: 0.65rem 0.85rem;
+        font-size: 0.85rem;
+    }
+    
+    .admin-logged-badge {
+        width: 100%;
+        justify-content: center;
+        padding: 0.5rem 0.85rem;
+        font-size: 0.82rem;
+    }
+
+    /* 2. Hero Section */
+    .hero-section {
+        padding: 1.75rem 1.15rem;
+        margin-bottom: 1.5rem;
+        border-radius: var(--radius-md);
+        text-align: center;
+    }
+    
+    .hero-content {
+        max-width: 100%;
+    }
+    
+    .hero-tag {
+        font-size: 0.78rem;
+        padding: 0.35rem 0.75rem;
+        margin-bottom: 0.85rem;
+    }
+    
+    .hero-title {
+        font-size: 1.75rem !important;
+        line-height: 1.3;
+        margin-bottom: 0.75rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 0.88rem;
+        line-height: 1.5;
+        margin-bottom: 1.25rem;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+        gap: 0.65rem;
+    }
+
+    .hero-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* 3. Main App Container & Section Header */
+    .app-container {
+        margin: 1.2rem auto;
+        padding: 0 0.85rem 3rem 0.85rem !important;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.85rem;
+        text-align: center;
+        margin-bottom: 1.35rem;
+    }
+    
+    .section-header .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* 4. Employee Cards Grid */
+    .employee-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.15rem;
+    }
+    
+    .employee-card {
+        padding: 1.15rem;
+    }
+    
+    .employee-header {
+        gap: 0.85rem;
+    }
+    
+    .employee-avatar {
+        width: 62px;
+        height: 62px;
+    }
+    
+    .employee-info h3 {
+        font-size: 1.15rem;
+    }
+    
+    .employee-actions {
+        flex-direction: column;
+        gap: 0.55rem;
+    }
+    
+    .employee-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* 5. Modals & Touch Dialogs */
+    .modal-container {
+        padding: 0.4rem;
+        align-items: flex-end; /* Bottom sheet styling for phones */
+    }
+    
+    .modal-content,
+    .modal-lg,
+    .modal-xl {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 92vh !important;
+        border-radius: 18px 18px 0 0;
+        margin: 0 auto;
+    }
+    
+    .modal-header {
+        padding: 1rem 1.15rem;
+    }
+    
+    .modal-header h2 {
+        font-size: 1.05rem;
+    }
+    
+    .modal-body {
+        padding: 1.15rem 1rem;
+        gap: 1.1rem;
+    }
+    
+    .modal-footer {
+        padding: 0.85rem 1rem;
+        flex-direction: column-reverse;
+        gap: 0.6rem;
+    }
+    
+    .modal-footer .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* 6. Form Inputs & Select Controls */
+    .form-row {
+        grid-template-columns: 1fr !important;
+        gap: 0.85rem;
+    }
+    
+    .custom-input,
+    .custom-select,
+    textarea {
+        font-size: 16px !important; /* Prevents auto-zoom on iOS */
+        padding: 0.75rem 0.95rem;
+    }
+
+    /* 7. Detailed Equipment Status Cards & Status Pills (Mobile Stacked Mode) */
+    .equipment-status-card {
+        padding: 0.95rem 0.85rem;
+        gap: 0.75rem;
+    }
+    
+    .equipment-title {
+        font-size: 0.92rem;
+    }
+    
+    .status-pill-group {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 0.45rem;
+    }
+    
+    .btn-status-pill {
+        width: 100%;
+        min-width: 0;
+        padding: 0.68rem 0.85rem;
+        font-size: 0.86rem;
+        justify-content: flex-start;
+        text-align: right;
+    }
+
+    /* 8. Evaluation Criteria Rows & Star Touch Ratings */
+    .rating-criteria-container {
+        padding: 1rem 0.85rem;
+        gap: 1rem;
+    }
+    
+    .criteria-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding-bottom: 1rem;
+    }
+    
+    .star-rating-input {
+        width: 100%;
+        justify-content: space-between;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 0.6rem 0.85rem;
+        border-radius: var(--radius-sm);
+    }
+    
+    .star-rating-input .stars {
+        font-size: 1.55rem; /* Larger Touch Target for Mobile Fingers */
+        gap: 0.45rem;
+    }
+
+    /* 9. Employee Details & Evaluation History Modal */
+    .employee-profile-summary {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+        padding: 1.15rem 0.85rem;
+    }
+    
+    .profile-avatar {
+        width: 75px;
+        height: 75px;
+    }
+    
+    .history-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.65rem;
+    }
+    
+    .history-scores-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    /* 10. Toasts on Mobile */
+    .toast-container {
+        bottom: 1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 92%;
+        max-width: 400px;
+    }
+    
+    .toast {
+        padding: 0.8rem 1.1rem;
+        font-size: 0.88rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .history-scores-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .brand-logo-img {
+        width: 55px;
+        height: 55px;
+    }
+
+    .brand-text h1 {
+        font-size: 1.3rem;
+    }
+}
+
