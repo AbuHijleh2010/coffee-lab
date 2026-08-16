@@ -5,8 +5,8 @@
 const STORAGE_KEYS = {
     SUPABASE_URL: 'coffeelab_supabase_url',
     SUPABASE_KEY: 'coffeelab_supabase_key',
-    DEMO_EMPLOYEES: 'coffeelab_demo_employees_v9',
-    DEMO_EVALUATIONS: 'coffeelab_demo_evaluations_v9'
+    DEMO_EMPLOYEES: 'coffeelab_demo_employees_v10',
+    DEMO_EVALUATIONS: 'coffeelab_demo_evaluations_v10'
 };
 
 let supabaseClient = null;
@@ -86,68 +86,9 @@ function getLocalEvaluationsSync() {
 }
 
 /**
- * Automatically sync any unsynced local data to Supabase Cloud DB using upsert
- */
-async function syncUnsyncedToCloud(cloudEmployees = [], cloudEvaluations = []) {
-    if (!isSupabaseConnected()) return;
-
-    try {
-        const localEmps = getLocalEmployeesSync();
-        if (localEmps.length > 0) {
-            const cloudEmpIds = new Set(cloudEmployees.map(e => e.id));
-            const unsyncedEmps = localEmps.filter(e => e && e.id && !cloudEmpIds.has(e.id));
-
-            for (const emp of unsyncedEmps) {
-                const dbPayload = {
-                    id: emp.id,
-                    name: emp.name,
-                    role: emp.role,
-                    avatar: emp.avatar || emp.avatar_url || '',
-                    created_at: emp.created_at || new Date().toISOString()
-                };
-                await supabaseClient.from('employees').upsert([dbPayload]).catch(() => {});
-            }
-        }
-    } catch (e) {
-        console.warn('Sync emps to cloud note:', e);
-    }
-
-    try {
-        const localEvals = getLocalEvaluationsSync();
-        if (localEvals.length > 0) {
-            const cloudEvalIds = new Set(cloudEvaluations.map(ev => ev.id));
-            const unsyncedEvals = localEvals.filter(ev => ev && ev.id && !cloudEvalIds.has(ev.id));
-
-            for (const ev of unsyncedEvals) {
-                const dbPayload = {
-                    id: ev.id,
-                    employee_id: ev.employee_id,
-                    evaluator_name: ev.evaluator_name || '',
-                    rating: parseFloat(ev.rating || 0),
-                    hygiene: parseFloat(ev.hygiene || 0),
-                    apron: parseFloat(ev.apron || 0),
-                    nails: parseFloat(ev.nails || 0),
-                    punctuality: parseFloat(ev.punctuality || 0),
-                    speed: parseFloat(ev.speed || 0),
-                    quality: parseFloat(ev.quality || 0),
-                    shift_time: ev.shift_time || '',
-                    notes: ev.notes || '',
-                    created_at: ev.created_at || new Date().toISOString()
-                };
-                await supabaseClient.from('evaluations').upsert([dbPayload]).catch(() => {});
-            }
-        }
-    } catch (e) {
-        console.warn('Sync evals to cloud note:', e);
-    }
-}
-
-/**
- * Fetch all employees (Merged Live Cloud & Instant Local Cache)
+ * Fetch all employees (Supabase Live Cloud DB Single Source of Truth)
  */
 async function fetchEmployees() {
-    const local = getLocalEmployeesSync();
-
     if (isSupabaseConnected()) {
         try {
             const res = await withTimeout(
@@ -155,36 +96,21 @@ async function fetchEmployees() {
                 1500
             );
             if (res && !res.error && Array.isArray(res.data)) {
-                // Auto sync any local items up to Supabase Cloud DB
-                syncUnsyncedToCloud(res.data, []);
-
-                const cloudMap = new Map();
-                res.data.forEach(emp => {
-                    if (emp && emp.id) cloudMap.set(emp.id, emp);
-                });
-                local.forEach(emp => {
-                    if (emp && emp.id && !cloudMap.has(emp.id)) {
-                        cloudMap.set(emp.id, emp);
-                    }
-                });
-                const merged = Array.from(cloudMap.values());
-                localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(merged));
-                return merged;
+                localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(res.data));
+                return res.data;
             }
         } catch (e) {
             console.warn('Supabase fetch employees fallback:', e.message);
         }
     }
 
-    return local;
+    return getLocalEmployeesSync();
 }
 
 /**
- * Add a new employee (Instant permanent save)
+ * Add a new employee (Instant permanent save to Cloud & Cache)
  */
 async function createEmployee(employeeData) {
-    localStorage.removeItem('coffeelab_is_cleared');
-
     const avatarVal = employeeData.avatar_url || employeeData.avatar || '';
     const newEmp = {
         id: 'emp_' + Date.now(),
@@ -222,11 +148,9 @@ async function createEmployee(employeeData) {
 }
 
 /**
- * Fetch all evaluations (Merged Live Cloud & Instant Local Cache)
+ * Fetch all evaluations (Supabase Live Cloud DB Single Source of Truth)
  */
 async function fetchEvaluations() {
-    const local = getLocalEvaluationsSync();
-
     if (isSupabaseConnected()) {
         try {
             const res = await withTimeout(
@@ -234,25 +158,15 @@ async function fetchEvaluations() {
                 1500
             );
             if (res && !res.error && Array.isArray(res.data)) {
-                const cloudMap = new Map();
-                res.data.forEach(ev => {
-                    if (ev && ev.id) cloudMap.set(ev.id, ev);
-                });
-                local.forEach(ev => {
-                    if (ev && ev.id && !cloudMap.has(ev.id)) {
-                        cloudMap.set(ev.id, ev);
-                    }
-                });
-                const merged = Array.from(cloudMap.values());
-                localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(merged));
-                return merged;
+                localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(res.data));
+                return res.data;
             }
         } catch (e) {
             console.warn('Supabase fetch evaluations fallback:', e.message);
         }
     }
 
-    return local;
+    return getLocalEvaluationsSync();
 }
 
 /**
