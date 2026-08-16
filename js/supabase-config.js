@@ -206,11 +206,7 @@ async function createEvaluation(evalData) {
     };
 
     try {
-        let current = [];
-        const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS);
-        if (raw) {
-            current = JSON.parse(raw);
-        }
+        let current = getLocalEvaluationsSync();
         current.unshift(newEval);
         localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(current));
     } catch (err) {
@@ -218,7 +214,26 @@ async function createEvaluation(evalData) {
     }
 
     if (isSupabaseConnected()) {
-        withTimeout(supabaseClient.from('evaluations').insert([newEval]), 1000).catch(() => {});
+        const dbPayload = {
+            id: newEval.id,
+            employee_id: newEval.employee_id,
+            evaluator_name: newEval.evaluator_name || '',
+            rating: parseFloat(newEval.rating || 0),
+            hygiene: parseFloat(newEval.hygiene || 0),
+            apron: parseFloat(newEval.apron || 0),
+            nails: parseFloat(newEval.nails || 0),
+            punctuality: parseFloat(newEval.punctuality || 0),
+            speed: parseFloat(newEval.speed || 0),
+            quality: parseFloat(newEval.quality || 0),
+            shift_time: newEval.shift_time || '',
+            notes: newEval.notes || '',
+            created_at: newEval.created_at
+        };
+        try {
+            await withTimeout(supabaseClient.from('evaluations').insert([dbPayload]), 2000);
+        } catch (e) {
+            console.warn('Supabase insert evaluation note:', e.message);
+        }
     }
 
     return newEval;
@@ -243,7 +258,19 @@ async function updateEvaluation(evalId, evalData) {
     }
 
     if (isSupabaseConnected()) {
-        withTimeout(supabaseClient.from('evaluations').update(evalData).eq('id', evalId), 1000).catch(() => {});
+        const dbPayload = {};
+        if (evalData.evaluator_name !== undefined) dbPayload.evaluator_name = evalData.evaluator_name;
+        if (evalData.rating !== undefined) dbPayload.rating = parseFloat(evalData.rating);
+        if (evalData.hygiene !== undefined) dbPayload.hygiene = parseFloat(evalData.hygiene);
+        if (evalData.apron !== undefined) dbPayload.apron = parseFloat(evalData.apron);
+        if (evalData.nails !== undefined) dbPayload.nails = parseFloat(evalData.nails);
+        if (evalData.punctuality !== undefined) dbPayload.punctuality = parseFloat(evalData.punctuality);
+        if (evalData.speed !== undefined) dbPayload.speed = parseFloat(evalData.speed);
+        if (evalData.quality !== undefined) dbPayload.quality = parseFloat(evalData.quality);
+        if (evalData.shift_time !== undefined) dbPayload.shift_time = evalData.shift_time;
+        if (evalData.notes !== undefined) dbPayload.notes = evalData.notes;
+
+        withTimeout(supabaseClient.from('evaluations').update(dbPayload).eq('id', evalId), 1500).catch(() => {});
     }
 
     return true;
@@ -264,7 +291,7 @@ async function deleteSingleEvaluation(evalId) {
     }
 
     if (isSupabaseConnected()) {
-        withTimeout(supabaseClient.from('evaluations').delete().eq('id', evalId), 1000).catch(() => {});
+        withTimeout(supabaseClient.from('evaluations').delete().eq('id', evalId), 1500).catch(() => {});
     }
 
     return true;
@@ -282,8 +309,8 @@ async function deleteAllEmployees() {
     }
 
     if (isSupabaseConnected()) {
-        withTimeout(supabaseClient.from('employees').delete().neq('id', '0'), 1000).catch(() => {});
-        withTimeout(supabaseClient.from('evaluations').delete().neq('id', '0'), 1000).catch(() => {});
+        withTimeout(supabaseClient.from('employees').delete().neq('id', '0'), 1500).catch(() => {});
+        withTimeout(supabaseClient.from('evaluations').delete().neq('id', '0'), 1500).catch(() => {});
     }
 
     return true;
@@ -311,8 +338,8 @@ async function deleteEmployee(employeeId) {
     }
 
     if (isSupabaseConnected()) {
-        withTimeout(supabaseClient.from('employees').delete().eq('id', employeeId), 1000).catch(() => {});
-        withTimeout(supabaseClient.from('evaluations').delete().eq('employee_id', employeeId), 1000).catch(() => {});
+        withTimeout(supabaseClient.from('employees').delete().eq('id', employeeId), 1500).catch(() => {});
+        withTimeout(supabaseClient.from('evaluations').delete().eq('employee_id', employeeId), 1500).catch(() => {});
     }
 
     return true;
@@ -337,7 +364,13 @@ async function updateEmployee(employeeId, employeeData) {
     }
 
     if (isSupabaseConnected()) {
-        withTimeout(supabaseClient.from('employees').update(employeeData).eq('id', employeeId), 1000).catch(() => {});
+        const dbPayload = {};
+        if (employeeData.name !== undefined) dbPayload.name = employeeData.name;
+        if (employeeData.role !== undefined) dbPayload.role = employeeData.role;
+        if (employeeData.avatar_url !== undefined || employeeData.avatar !== undefined) {
+            dbPayload.avatar = employeeData.avatar_url || employeeData.avatar || '';
+        }
+        withTimeout(supabaseClient.from('employees').update(dbPayload).eq('id', employeeId), 1500).catch(() => {});
     }
 
     return true;
