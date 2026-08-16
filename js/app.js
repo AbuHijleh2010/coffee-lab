@@ -619,6 +619,35 @@ function handleEditSingleEvalPrompt(evalId) {
 }
 
 /**
+ * Select Preset Avatar URL
+ */
+function selectPresetAvatar(url) {
+    const avatarInput = document.getElementById('empAvatar');
+    if (avatarInput) {
+        avatarInput.value = url;
+        showToast('تم اختيار الصورة الرمزية بنجاح', 'info');
+    }
+}
+
+/**
+ * Handle Local File Upload for Avatar
+ */
+function handleAvatarFileSelect(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            const avatarInput = document.getElementById('empAvatar');
+            if (avatarInput) {
+                avatarInput.value = evt.target.result;
+                showToast('تم تحميل الصورة من جهازك بنجاح!', 'success');
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+/**
  * Open Add Employee Modal
  */
 function openAddEmployeeModal() {

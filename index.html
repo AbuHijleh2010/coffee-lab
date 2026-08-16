@@ -10,11 +10,11 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@500;700;800&family=Readex+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Main CSS -->
-    <link rel="stylesheet" href="css/style.css?v=1.0.5">
+    <link rel="stylesheet" href="css/style.css?v=1.2.0">
     <!-- Supabase JS Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -492,9 +492,27 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="empAvatar"><i class="fa-solid fa-image"></i> رابط صورة الموظف / البروفايل (اختياري)</label>
-                    <input type="url" id="empAvatar" class="custom-input" placeholder="https://images.unsplash.com/...">
-                    <small class="help-text">إذا تركت الحقل فارغاً سيتم توليد صورة رمزية احترافية تلقائياً.</small>
+                    <label for="empAvatar"><i class="fa-solid fa-image"></i> صورة الموظف / البروفايل</label>
+                    
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <input type="text" id="empAvatar" class="custom-input" placeholder="رابط صورة (https://...) أو اختر ملف صورة أو صورة جاهزة">
+                        <button type="button" class="btn btn-outline" onclick="document.getElementById('empAvatarFileInput').click()" title="رفع صورة من جهازك">
+                            <i class="fa-solid fa-upload"></i> اختر ملف
+                        </button>
+                        <input type="file" id="empAvatarFileInput" accept="image/*" style="display: none;" onchange="handleAvatarFileSelect(event)">
+                    </div>
+
+                    <div class="preset-avatars-label" style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.35rem;">
+                        أو اختر صورة جاهزة كـ Avatar للموظف:
+                    </div>
+                    <div class="avatar-presets-grid">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" onclick="selectPresetAvatar('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80')" class="preset-avatar-thumb" title="صورة 1">
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80" onclick="selectPresetAvatar('https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80')" class="preset-avatar-thumb" title="صورة 2">
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80" onclick="selectPresetAvatar('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80')" class="preset-avatar-thumb" title="صورة 3">
+                        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=150&q=80" onclick="selectPresetAvatar('https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=150&q=80')" class="preset-avatar-thumb" title="صورة 4">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" onclick="selectPresetAvatar('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80')" class="preset-avatar-thumb" title="صورة 5">
+                        <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80" onclick="selectPresetAvatar('https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80')" class="preset-avatar-thumb" title="صورة 6">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline" onclick="closeModal('addEmployeeModal')">إلغاء</button>
@@ -535,7 +553,7 @@
     <div id="toastContainer" class="toast-container"></div>
 
     <!-- Application JavaScript Files -->
-    <script src="js/supabase-config.js?v=1.1.0"></script>
-    <script src="js/app.js?v=1.1.0"></script>
+    <script src="js/supabase-config.js?v=1.1.1"></script>
+    <script src="js/app.js?v=1.1.1"></script>
 </body>
 </html>
