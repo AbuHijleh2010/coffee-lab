@@ -5,8 +5,8 @@
 const STORAGE_KEYS = {
     SUPABASE_URL: 'coffeelab_supabase_url',
     SUPABASE_KEY: 'coffeelab_supabase_key',
-    DEMO_EMPLOYEES: 'coffeelab_demo_employees_v5',
-    DEMO_EVALUATIONS: 'coffeelab_demo_evaluations_v5'
+    DEMO_EMPLOYEES: 'coffeelab_demo_employees_v6',
+    DEMO_EVALUATIONS: 'coffeelab_demo_evaluations_v6'
 };
 
 let supabaseClient = null;
@@ -68,7 +68,7 @@ const INITIAL_DEMO_EVALUATIONS = [
     {
         id: 'eval_1',
         employee_id: 'emp_1',
-        evaluator_name: 'إدارة الهيد بار',
+        evaluator_name: 'إدارة البار',
         hygiene: 5,
         apron: 5,
         nails: 5,
@@ -77,6 +77,90 @@ const INITIAL_DEMO_EVALUATIONS = [
         speed: 5,
         quality: 5,
         notes: 'قائد فريق ممتاز والالتزام كامل بأعلى معايير كوفي لاب.',
+        created_at: new Date().toISOString()
+    },
+    {
+        id: 'eval_2',
+        employee_id: 'emp_2',
+        evaluator_name: 'عمرو ابو حجلة',
+        hygiene: 5,
+        apron: 5,
+        nails: 5,
+        punctuality: 5,
+        shift_time: 'شفت صباحي',
+        speed: 5,
+        quality: 5,
+        notes: 'أداء ممتاز بالتحضير والالتزام بالنظافة والشفت.',
+        created_at: new Date().toISOString()
+    },
+    {
+        id: 'eval_3',
+        employee_id: 'emp_3',
+        evaluator_name: 'عمرو ابو حجلة',
+        hygiene: 5,
+        apron: 5,
+        nails: 4,
+        punctuality: 5,
+        shift_time: 'شفت مسائي',
+        speed: 5,
+        quality: 5,
+        notes: 'سريع جداً في وقت الذروة، دقة عالية في إعداد القهوة.',
+        created_at: new Date().toISOString()
+    },
+    {
+        id: 'eval_4',
+        employee_id: 'emp_4',
+        evaluator_name: 'عمرو ابو حجلة',
+        hygiene: 5,
+        apron: 5,
+        nails: 5,
+        punctuality: 5,
+        shift_time: 'شفت صباحي',
+        speed: 4,
+        quality: 5,
+        notes: 'جودة مشروبات عالية جداً ومعاملة ممتازة مع الزبائن.',
+        created_at: new Date().toISOString()
+    },
+    {
+        id: 'eval_5',
+        employee_id: 'emp_5',
+        evaluator_name: 'عمرو ابو حجلة',
+        hygiene: 5,
+        apron: 5,
+        nails: 5,
+        punctuality: 5,
+        shift_time: 'شفت مسائي',
+        speed: 5,
+        quality: 5,
+        notes: 'التزام ممتاز بجميع المعايير والترتيب بالبار.',
+        created_at: new Date().toISOString()
+    },
+    {
+        id: 'eval_6',
+        employee_id: 'emp_6',
+        evaluator_name: 'عمرو ابو حجلة',
+        hygiene: 5,
+        apron: 5,
+        nails: 5,
+        punctuality: 4,
+        shift_time: 'شفت مسائي',
+        speed: 4,
+        quality: 4,
+        notes: 'تطور ملحوظ في الأداء والسرعة، ممتاز جداً.',
+        created_at: new Date().toISOString()
+    },
+    {
+        id: 'eval_7',
+        employee_id: 'emp_7',
+        evaluator_name: 'عمرو ابو حجلة',
+        hygiene: 5,
+        apron: 5,
+        nails: 5,
+        punctuality: 5,
+        shift_time: 'شفت صباحي',
+        speed: 5,
+        quality: 5,
+        notes: 'أداء راقي والتزام كامل بكل المعايير والشفت.',
         created_at: new Date().toISOString()
     }
 ];
@@ -93,7 +177,7 @@ function withTimeout(promise, ms = 800) {
 }
 
 const DEFAULT_SUPABASE_URL = 'https://dpdtnnzwqqejeqvtufbm.supabase.co';
-const DEFAULT_SUPABASE_KEY = 'sb_publishable_Jg6YQ4cJ965a0QdavhTD6Q_Z9eHkW_d';
+const DEFAULT_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwZHRubnp3cXFlamVxdnR1ZmJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4MTEyNjUsImV4cCI6MjEwMjM4NzI2NX0.k4BB7nQV6AF0vF1LfzCBWrzhG4_Af4hh3M2-OeNCRMM';
 
 /**
  * Initialize Local Store & Default Supabase Cloud Sync
@@ -102,7 +186,7 @@ function initSupabaseService() {
     const url = localStorage.getItem(STORAGE_KEYS.SUPABASE_URL) || DEFAULT_SUPABASE_URL;
     const key = localStorage.getItem(STORAGE_KEYS.SUPABASE_KEY) || DEFAULT_SUPABASE_KEY;
 
-    if (url && key && url.startsWith('http') && window.supabase) {
+    if (url && key && window.supabase) {
         try {
             supabaseClient = window.supabase.createClient(url, key);
         } catch (err) {
@@ -124,23 +208,34 @@ function isSupabaseConnected() {
 }
 
 /**
- * Fetch all employees (Supabase Cloud DB Priority with Local Storage Cache)
+ * Fetch all employees (Supabase Live Cloud DB Priority)
  */
 async function fetchEmployees() {
     if (localStorage.getItem('coffeelab_is_cleared') === 'true') {
         return [];
     }
 
-    // 1. Try fetching from Cloud Supabase Database first
+    // 1. Try querying Supabase Cloud Database first
     if (isSupabaseConnected()) {
         try {
             const res = await withTimeout(
                 supabaseClient.from('employees').select('*').order('created_at', { ascending: false }),
-                1500
+                2000
             );
-            if (res && !res.error && Array.isArray(res.data) && res.data.length > 0) {
-                localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(res.data));
-                return res.data;
+            if (res && !res.error && Array.isArray(res.data)) {
+                if (res.data.length > 0) {
+                    localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(res.data));
+                    return res.data;
+                } else {
+                    // Table exists but empty: seed initial employees to Supabase Cloud DB
+                    try {
+                        await supabaseClient.from('employees').insert(INITIAL_DEMO_EMPLOYEES);
+                        localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(INITIAL_DEMO_EMPLOYEES));
+                        return INITIAL_DEMO_EMPLOYEES;
+                    } catch (seedErr) {
+                        console.warn('Seeding employees error:', seedErr);
+                    }
+                }
             }
         } catch (e) {
             console.warn('Supabase fetch employees fallback:', e.message);
@@ -204,7 +299,7 @@ async function createEmployee(employeeData) {
 }
 
 /**
- * Fetch all evaluations (Supabase Cloud DB Priority with Local Cache)
+ * Fetch all evaluations (Supabase Live Cloud DB Priority)
  */
 async function fetchEvaluations() {
     if (localStorage.getItem('coffeelab_is_cleared') === 'true') {
@@ -215,11 +310,21 @@ async function fetchEvaluations() {
         try {
             const res = await withTimeout(
                 supabaseClient.from('evaluations').select('*').order('created_at', { ascending: false }),
-                1500
+                2000
             );
-            if (res && !res.error && Array.isArray(res.data) && res.data.length > 0) {
-                localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(res.data));
-                return res.data;
+            if (res && !res.error && Array.isArray(res.data)) {
+                if (res.data.length > 0) {
+                    localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(res.data));
+                    return res.data;
+                } else {
+                    try {
+                        await supabaseClient.from('evaluations').insert(INITIAL_DEMO_EVALUATIONS);
+                        localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(INITIAL_DEMO_EVALUATIONS));
+                        return INITIAL_DEMO_EVALUATIONS;
+                    } catch (seedErr) {
+                        console.warn('Seeding evaluations error:', seedErr);
+                    }
+                }
             }
         } catch (e) {
             console.warn('Supabase fetch evaluations fallback:', e.message);
