@@ -61,9 +61,6 @@ function isSupabaseConnected() {
  * Synchronously get local employees for zero-latency instant rendering
  */
 function getLocalEmployeesSync() {
-    if (localStorage.getItem('coffeelab_is_cleared') === 'true') {
-        return [];
-    }
     try {
         const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES);
         if (raw !== null) {
@@ -78,9 +75,6 @@ function getLocalEmployeesSync() {
  * Synchronously get local evaluations for zero-latency instant rendering
  */
 function getLocalEvaluationsSync() {
-    if (localStorage.getItem('coffeelab_is_cleared') === 'true') {
-        return [];
-    }
     try {
         const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EVALUATIONS);
         if (raw !== null) {
@@ -95,10 +89,6 @@ function getLocalEvaluationsSync() {
  * Fetch all employees (Supabase Live Cloud DB with Strict 1000ms Timeout)
  */
 async function fetchEmployees() {
-    if (localStorage.getItem('coffeelab_is_cleared') === 'true') {
-        return [];
-    }
-
     if (isSupabaseConnected()) {
         try {
             const res = await withTimeout(
@@ -167,16 +157,9 @@ async function createEmployee(employeeData) {
 }
 
 /**
- * Fetch all evaluations (Supabase Live Cloud DB Priority)
- */
-/**
  * Fetch all evaluations (Supabase Live Cloud DB with Strict 1000ms Timeout)
  */
 async function fetchEvaluations() {
-    if (localStorage.getItem('coffeelab_is_cleared') === 'true') {
-        return [];
-    }
-
     if (isSupabaseConnected()) {
         try {
             const res = await withTimeout(
@@ -275,7 +258,6 @@ async function deleteSingleEvaluation(evalId) {
  */
 async function deleteAllEmployees() {
     try {
-        localStorage.setItem('coffeelab_is_cleared', 'true');
         localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify([]));
         localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify([]));
     } catch (e) {
@@ -306,10 +288,6 @@ async function deleteEmployee(employeeId) {
         if (rawEvals) {
             const evals = JSON.parse(rawEvals).filter(ev => ev.employee_id !== employeeId);
             localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(evals));
-        }
-
-        if (updatedEmps.length === 0) {
-            localStorage.setItem('coffeelab_is_cleared', 'true');
         }
     } catch (e) {
         console.error('Error deleting employee:', e);
