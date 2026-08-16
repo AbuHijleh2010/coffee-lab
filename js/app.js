@@ -8,7 +8,9 @@ let state = {
     filterSearch: '',
     filterRole: 'all',
     currentAdmin: sessionStorage.getItem('coffeelab_admin_user') || null,
-    pendingAction: null
+    pendingAction: null,
+    editingEvalId: null,
+    editingEmpId: null
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -327,10 +329,13 @@ function renderEmployeesGrid() {
 
             <div class="emp-card-footer">
                 <button class="btn btn-secondary btn-sm" onclick="openDetailsModal('${emp.id}')">
-                    <i class="fa-solid fa-eye"></i> عرض السجل
+                    <i class="fa-solid fa-eye"></i> السجل
                 </button>
                 <button class="btn btn-primary btn-sm" onclick="requireAdminAuth(() => openEvaluationModal('${emp.id}'))">
                     <i class="fa-solid fa-pen"></i> تقييم
+                </button>
+                <button class="btn btn-outline btn-sm" title="تعديل ملف الموظف" onclick="requireAdminAuth(() => openEditEmployeeModal('${emp.id}'))">
+                    <i class="fa-solid fa-user-pen"></i>
                 </button>
                 <button class="btn btn-danger-icon btn-sm" title="حذف الموظف" onclick="requireAdminAuth(() => handleDeleteEmployeePrompt('${emp.id}', '${emp.name.replace(/'/g, "\\'")}'))">
                     <i class="fa-solid fa-trash-can"></i>
@@ -614,7 +619,40 @@ function handleEditSingleEvalPrompt(evalId) {
 }
 
 /**
- * Handle Add Employee Form Submission
+ * Open Add Employee Modal
+ */
+function openAddEmployeeModal() {
+    state.editingEmpId = null;
+    document.getElementById('addEmployeeForm').reset();
+    const title = document.getElementById('addEmpModalTitle');
+    const btn = document.getElementById('btnSubmitEmp');
+    if (title) title.innerHTML = '<i class="fa-solid fa-user-plus"></i> إضافة موظف جديد لـ Coffee Lab';
+    if (btn) btn.innerHTML = '<i class="fa-solid fa-check"></i> إضافة الموظف';
+    openModal('addEmployeeModal');
+}
+
+/**
+ * Open Edit Employee Profile Modal
+ */
+function openEditEmployeeModal(empId) {
+    const emp = state.employees.find(e => e.id === empId);
+    if (!emp) return;
+
+    state.editingEmpId = emp.id;
+    const title = document.getElementById('addEmpModalTitle');
+    const btn = document.getElementById('btnSubmitEmp');
+    if (title) title.innerHTML = '<i class="fa-solid fa-user-pen"></i> تعديل بروفايل الموظف';
+    if (btn) btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> حفظ التعديلات';
+
+    document.getElementById('empName').value = emp.name || '';
+    document.getElementById('empRole').value = emp.role || 'Barista';
+    document.getElementById('empAvatar').value = emp.avatar_url && !emp.avatar_url.includes('ui-avatars.com') ? emp.avatar_url : '';
+
+    openModal('addEmployeeModal');
+}
+
+/**
+ * Handle Add or Edit Employee Form Submission
  */
 async function handleAddEmployeeSubmit(e) {
     e.preventDefault();
@@ -635,13 +673,19 @@ async function handleAddEmployeeSubmit(e) {
     };
 
     try {
-        await createEmployee(payload);
-        showToast('تمت إضافة الموظف بنجاح!', 'success');
+        if (state.editingEmpId) {
+            await updateEmployee(state.editingEmpId, payload);
+            showToast(`تم تعديل بروفايل الموظف "${name}" بنجاح!`, 'success');
+            state.editingEmpId = null;
+        } else {
+            await createEmployee(payload);
+            showToast('تمت إضافة الموظف بنجاح!', 'success');
+        }
         closeModal('addEmployeeModal');
         document.getElementById('addEmployeeForm').reset();
         await refreshAppData();
     } catch (err) {
-        showToast('حدث خطأ أثناء إضافة الموظف', 'danger');
+        showToast('حدث خطأ أثناء حفظ بيانات الموظف', 'danger');
     }
 }
 
@@ -767,16 +811,21 @@ function openDetailsModal(empId) {
     }
 
     modalBody.innerHTML = `
-        <div class="employee-profile-summary">
-            <img src="${avatar}" class="profile-avatar" alt="${emp.name}">
-            <div>
-                <h3 style="font-size: 1.3rem; font-weight: 800;">${emp.name}</h3>
-                <span class="badge badge-warning" style="margin-top: 0.25rem; display: inline-block;">${emp.role}</span>
-                <div style="margin-top: 0.5rem; display: flex; gap: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
-                    <span><strong>معدل التقييم:</strong> <strong style="color: #f59e0b;">${avgRating > 0 ? avgRating + ' ★' : 'لا يوجد'}</strong></span>
-                    <span><strong>عدد التقييمات:</strong> <strong>${evalCount}</strong></span>
+        <div class="employee-profile-summary" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <img src="${avatar}" class="profile-avatar" alt="${emp.name}">
+                <div>
+                    <h3 style="font-size: 1.3rem; font-weight: 800;">${emp.name}</h3>
+                    <span class="badge badge-warning" style="margin-top: 0.25rem; display: inline-block;">${emp.role}</span>
+                    <div style="margin-top: 0.5rem; display: flex; gap: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
+                        <span><strong>معدل التقييم:</strong> <strong style="color: #f59e0b;">${avgRating > 0 ? avgRating + ' ★' : 'لا يوجد'}</strong></span>
+                        <span><strong>عدد التقييمات:</strong> <strong>${evalCount}</strong></span>
+                    </div>
                 </div>
             </div>
+            <button type="button" class="btn btn-outline btn-sm" onclick="requireAdminAuth(() => { closeModal('detailsModal'); openEditEmployeeModal('${emp.id}'); })">
+                <i class="fa-solid fa-user-pen"></i> تعديل البروفايل
+            </button>
         </div>
 
         <div style="margin-top: 1.5rem;">

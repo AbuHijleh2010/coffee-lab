@@ -65,7 +65,7 @@
                     <!-- Dynamic auth state button rendered by JS -->
                 </div>
 
-                <button id="addEmployeeBtn" class="btn btn-secondary" onclick="requireAdminAuth(() => openModal('addEmployeeModal'))">
+                <button id="addEmployeeBtn" class="btn btn-secondary" onclick="requireAdminAuth(() => openAddEmployeeModal())">
                     <i class="fa-solid fa-user-plus"></i>
                     <span>إضافة موظف</span>
                 </button>
@@ -467,11 +467,11 @@
         </div>
     </div>
 
-    <!-- Modal: Add New Employee -->
+    <!-- Modal: Add / Edit Employee -->
     <div id="addEmployeeModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fa-solid fa-user-plus"></i> إضافة موظف جديد لـ Coffee Lab</h2>
+                <h2 id="addEmpModalTitle"><i class="fa-solid fa-user-plus"></i> إضافة موظف جديد لـ Coffee Lab</h2>
                 <button class="modal-close" onclick="closeModal('addEmployeeModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form id="addEmployeeForm" class="modal-body" onsubmit="handleAddEmployeeSubmit(event)">
@@ -482,20 +482,23 @@
                 <div class="form-group">
                     <label for="empRole"><i class="fa-solid fa-award"></i> المسمى الوظيفي *</label>
                     <select id="empRole" class="custom-select" required>
+                        <option value="Head Barista">مسؤول الباريستا (Head Barista)</option>
+                        <option value="Shift Supervisor">مشرف شفت (Shift Supervisor)</option>
                         <option value="Senior Barista">باريستا محترف (Senior Barista)</option>
                         <option value="Barista">باريستا (Barista)</option>
                         <option value="Junior Barista">باريستا مبتدئ (Junior Barista)</option>
-                        <option value="Head Barista">مسؤول الباريستا (Head Barista)</option>
+                        <option value="Bar Assistant">مساعد بار (Bar Assistant)</option>
+                        <option value="Trainee">متدرب جديد (Trainee)</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="empAvatar"><i class="fa-solid fa-image"></i> رابط صورة الموظف (اختياري)</label>
+                    <label for="empAvatar"><i class="fa-solid fa-image"></i> رابط صورة الموظف / البروفايل (اختياري)</label>
                     <input type="url" id="empAvatar" class="custom-input" placeholder="https://images.unsplash.com/...">
-                    <small class="help-text">إذا تركت الحقل فارغاً سيتم توليد صورة رمزية مميزة تلقائياً.</small>
+                    <small class="help-text">إذا تركت الحقل فارغاً سيتم توليد صورة رمزية احترافية تلقائياً.</small>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline" onclick="closeModal('addEmployeeModal')">إلغاء</button>
-                    <button type="submit" class="btn btn-secondary"><i class="fa-solid fa-check"></i> إضافة الموظف</button>
+                    <button type="submit" id="btnSubmitEmp" class="btn btn-secondary"><i class="fa-solid fa-check"></i> حفظ الموظف</button>
                 </div>
             </form>
         </div>
@@ -532,7 +535,7 @@
     <div id="toastContainer" class="toast-container"></div>
 
     <!-- Application JavaScript Files -->
-    <script src="js/supabase-config.js?v=1.0.9"></script>
-    <script src="js/app.js?v=1.0.9"></script>
+    <script src="js/supabase-config.js?v=1.1.0"></script>
+    <script src="js/app.js?v=1.1.0"></script>
 </body>
 </html>

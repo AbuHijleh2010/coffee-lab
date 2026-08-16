@@ -270,3 +270,28 @@ async function deleteEmployee(employeeId) {
 
     return true;
 }
+
+/**
+ * Update an existing employee profile (Name, Role, Avatar)
+ */
+async function updateEmployee(employeeId, employeeData) {
+    try {
+        const rawEmps = localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES);
+        if (rawEmps) {
+            let emps = JSON.parse(rawEmps);
+            const index = emps.findIndex(e => e.id === employeeId);
+            if (index !== -1) {
+                emps[index] = { ...emps[index], ...employeeData };
+                localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(emps));
+            }
+        }
+    } catch (e) {
+        console.error('Error updating employee profile:', e);
+    }
+
+    if (isSupabaseConnected()) {
+        withTimeout(supabaseClient.from('employees').update(employeeData).eq('id', employeeId), 1000).catch(() => {});
+    }
+
+    return true;
+}
