@@ -89,22 +89,34 @@ function getLocalEvaluationsSync() {
  * Fetch all employees (Supabase Live Cloud DB with Strict 1000ms Timeout)
  */
 async function fetchEmployees() {
+    const local = getLocalEmployeesSync();
+
     if (isSupabaseConnected()) {
         try {
             const res = await withTimeout(
                 supabaseClient.from('employees').select('*').order('created_at', { ascending: false }),
-                1000
+                1500
             );
             if (res && !res.error && Array.isArray(res.data)) {
-                localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(res.data));
-                return res.data;
+                const cloudMap = new Map();
+                res.data.forEach(emp => {
+                    if (emp && emp.id) cloudMap.set(emp.id, emp);
+                });
+                local.forEach(emp => {
+                    if (emp && emp.id && !cloudMap.has(emp.id)) {
+                        cloudMap.set(emp.id, emp);
+                    }
+                });
+                const merged = Array.from(cloudMap.values());
+                localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(merged));
+                return merged;
             }
         } catch (e) {
             console.warn('Supabase fetch employees fallback:', e.message);
         }
     }
 
-    return getLocalEmployeesSync();
+    return local;
 }
 
 /**
@@ -124,14 +136,7 @@ async function createEmployee(employeeData) {
     };
 
     try {
-        let current = [];
-        const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES);
-        if (raw) {
-            current = JSON.parse(raw);
-        }
-        if (!current || !Array.isArray(current)) {
-            current = [];
-        }
+        let current = getLocalEmployeesSync();
         current.unshift(newEmp);
         localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(current));
     } catch (err) {
@@ -147,7 +152,7 @@ async function createEmployee(employeeData) {
             created_at: newEmp.created_at
         };
         try {
-            await withTimeout(supabaseClient.from('employees').insert([dbPayload]), 1500);
+            await withTimeout(supabaseClient.from('employees').insert([dbPayload]), 2000);
         } catch (e) {
             console.warn('Supabase insert employee note:', e.message);
         }
@@ -157,25 +162,37 @@ async function createEmployee(employeeData) {
 }
 
 /**
- * Fetch all evaluations (Supabase Live Cloud DB with Strict 1000ms Timeout)
+ * Fetch all evaluations (Merged Live Cloud & Instant Local Cache)
  */
 async function fetchEvaluations() {
+    const local = getLocalEvaluationsSync();
+
     if (isSupabaseConnected()) {
         try {
             const res = await withTimeout(
                 supabaseClient.from('evaluations').select('*').order('created_at', { ascending: false }),
-                1000
+                1500
             );
             if (res && !res.error && Array.isArray(res.data)) {
-                localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(res.data));
-                return res.data;
+                const cloudMap = new Map();
+                res.data.forEach(ev => {
+                    if (ev && ev.id) cloudMap.set(ev.id, ev);
+                });
+                local.forEach(ev => {
+                    if (ev && ev.id && !cloudMap.has(ev.id)) {
+                        cloudMap.set(ev.id, ev);
+                    }
+                });
+                const merged = Array.from(cloudMap.values());
+                localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(merged));
+                return merged;
             }
         } catch (e) {
             console.warn('Supabase fetch evaluations fallback:', e.message);
         }
     }
 
-    return getLocalEvaluationsSync();
+    return local;
 }
 
 /**
