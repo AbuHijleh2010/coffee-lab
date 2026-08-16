@@ -5,8 +5,8 @@
 const STORAGE_KEYS = {
     SUPABASE_URL: 'coffeelab_supabase_url',
     SUPABASE_KEY: 'coffeelab_supabase_key',
-    DEMO_EMPLOYEES: 'coffeelab_demo_employees_v8',
-    DEMO_EVALUATIONS: 'coffeelab_demo_evaluations_v8'
+    DEMO_EMPLOYEES: 'coffeelab_demo_employees_v9',
+    DEMO_EVALUATIONS: 'coffeelab_demo_evaluations_v9'
 };
 
 let supabaseClient = null;
