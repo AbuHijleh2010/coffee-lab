@@ -73,10 +73,6 @@
                     <i class="fa-solid fa-star"></i>
                     <span>تقييم جديد (الهيد بار)</span>
                 </button>
-                <button id="backupSyncNavBtn" class="btn btn-outline" title="نقل البيانات والتقييمات بين اللابتوب والتلفون" onclick="openBackupModal()">
-                    <i class="fa-solid fa-mobile-screen-button"></i>
-                    <span>نقل البيانات للتلفون</span>
-                </button>
                 <button id="deleteAllBtn" class="btn btn-danger-icon" title="مسح جميع الموظفين والبدء بصفحة نظيفة" onclick="requireAdminAuth(() => handleDeleteAllPrompt())">
                     <i class="fa-solid fa-trash-sweep"></i>
                 </button>
@@ -633,65 +629,6 @@
                     <button type="button" id="btnClearConfig" class="btn btn-outline text-danger">مسح المفاتيح (استخدام الوضع التجريبي)</button>
                     <button type="button" id="btnSaveConfig" class="btn btn-primary"><i class="fa-solid fa-plug"></i> حفظ والاتصال</button>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal: Backup & Transfer Data to Mobile -->
-    <div id="backupModal" class="modal">
-        <div class="modal-content modal-lg">
-            <div class="modal-header">
-                <h2><i class="fa-solid fa-mobile-screen-button"></i> نقل ومزامنة التقييمات بين اللابتوب والتلفون</h2>
-                <button class="modal-close" onclick="closeModal('backupModal')"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="modal-body">
-                <div style="background: rgba(217, 119, 6, 0.12); border: 1px solid var(--gold-pure); padding: 1rem; border-radius: 12px; margin-bottom: 1.25rem; font-size: 0.92rem; line-height: 1.6;">
-                    <i class="fa-solid fa-circle-info" style="color: var(--gold-pure); font-size: 1.2rem;"></i>
-                    <strong>كيف تضمن ظهور كل تقييماتك وموظفيك على التلفون؟</strong><br>
-                    بسبب حماية الخصوصية في المتصفحات، البيانات التي تدخلها على اللابتوب تُحفظ في ذاكرة اللابتوب الخاصة.<br>
-                    <strong>يمكنك نقل بياناتك للتلفون بخطوتين بسيطتين:</strong>
-                </div>
-
-                <!-- Step 1: Export from Laptop -->
-                <div class="criteria-card-box" style="margin-bottom: 1.25rem;">
-                    <h4><i class="fa-solid fa-laptop"></i> الخطوة الأولى (على اللابتوب): تصدير بياناتك التي قمت بإضافتها</h4>
-                    <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.85rem;">
-                        قم بتنزيل ملف البيانات أو نسخ الكود وإرساله لواتساب تلفونك:
-                    </p>
-                    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                        <button type="button" class="btn btn-primary" onclick="exportDataToFile()">
-                            <i class="fa-solid fa-download"></i> تنزيل ملف البيانات (CoffeeLab_Backup.json)
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="copyDataCodeToClipboard()">
-                            <i class="fa-solid fa-copy"></i> نسخ كود البيانات (لإرساله بالواتساب)
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Step 2: Import on Mobile -->
-                <div class="criteria-card-box">
-                    <h4><i class="fa-solid fa-mobile-button"></i> الخطوة الثانية (على التلفون): استيراد البيانات للتلفون</h4>
-                    <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.85rem;">
-                        افتَح هذا الرابط على التلفون، ثم اختر ملف البيانات الذي أرسلته أو الصق كود البيانات هنا:
-                    </p>
-                    
-                    <div class="form-group">
-                        <label><i class="fa-solid fa-file-import"></i> الخيار أ: رفع ملف النسخة الاحتياطية (.json)</label>
-                        <input type="file" id="importJsonFileInput" class="custom-input" accept=".json" onchange="handleImportJsonFile(event)">
-                    </div>
-
-                    <div class="form-group" style="margin-top: 0.85rem;">
-                        <label><i class="fa-solid fa-paste"></i> الخيار ب: لصق كود البيانات المنسوخ من الواتساب</label>
-                        <textarea id="importJsonTextarea" class="custom-textarea" rows="3" placeholder="الصق كود البيانات هنا ثم اضغط على زر استيراد البيانات..."></textarea>
-                    </div>
-
-                    <button type="button" class="btn btn-primary" onclick="handleImportTextCode()" style="width: 100%; margin-top: 0.5rem;">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> استيراد وتشغيل كافة الموظفين والتقييمات الآن
-                    </button>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline" onclick="closeModal('backupModal')">إغلاق</button>
             </div>
         </div>
     </div>

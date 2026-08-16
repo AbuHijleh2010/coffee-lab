@@ -92,17 +92,21 @@ function withTimeout(promise, ms = 800) {
     });
 }
 
+const DEFAULT_SUPABASE_URL = 'https://dpdtnnzwqqejeqvtufbm.supabase.co';
+const DEFAULT_SUPABASE_KEY = 'sb_publishable_Jg6YQ4cJ965a0QdavhTD6Q_Z9eHkW_d';
+
 /**
- * Initialize Local Store & Optional Supabase Sync
+ * Initialize Local Store & Default Supabase Cloud Sync
  */
 function initSupabaseService() {
-    const url = localStorage.getItem(STORAGE_KEYS.SUPABASE_URL);
-    const key = localStorage.getItem(STORAGE_KEYS.SUPABASE_KEY);
+    const url = localStorage.getItem(STORAGE_KEYS.SUPABASE_URL) || DEFAULT_SUPABASE_URL;
+    const key = localStorage.getItem(STORAGE_KEYS.SUPABASE_KEY) || DEFAULT_SUPABASE_KEY;
 
     if (url && key && url.startsWith('http') && window.supabase) {
         try {
             supabaseClient = window.supabase.createClient(url, key);
         } catch (err) {
+            console.error('Supabase Client error:', err);
             supabaseClient = null;
         }
     } else {
@@ -120,14 +124,30 @@ function isSupabaseConnected() {
 }
 
 /**
- * Fetch all employees (Strict local storage priority)
+ * Fetch all employees (Supabase Cloud DB Priority with Local Storage Cache)
  */
 async function fetchEmployees() {
-    // If user explicitly cleared data, return empty array immediately
     if (localStorage.getItem('coffeelab_is_cleared') === 'true') {
         return [];
     }
 
+    // 1. Try fetching from Cloud Supabase Database first
+    if (isSupabaseConnected()) {
+        try {
+            const res = await withTimeout(
+                supabaseClient.from('employees').select('*').order('created_at', { ascending: false }),
+                1500
+            );
+            if (res && !res.error && Array.isArray(res.data) && res.data.length > 0) {
+                localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(res.data));
+                return res.data;
+            }
+        } catch (e) {
+            console.warn('Supabase fetch employees fallback:', e.message);
+        }
+    }
+
+    // 2. Fallback to LocalStorage
     let localEmps = [];
     try {
         const raw = localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES);
@@ -138,28 +158,11 @@ async function fetchEmployees() {
                 localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(INITIAL_DEMO_EMPLOYEES));
             }
         } else {
-            // First time visit on this domain: seed default employees!
             localEmps = INITIAL_DEMO_EMPLOYEES;
             localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(INITIAL_DEMO_EMPLOYEES));
         }
     } catch (e) {
         localEmps = INITIAL_DEMO_EMPLOYEES;
-    }
-
-    // Only query Supabase if local store has never been set
-    if (isSupabaseConnected() && !localStorage.getItem(STORAGE_KEYS.DEMO_EMPLOYEES)) {
-        try {
-            const res = await withTimeout(
-                supabaseClient.from('employees').select('*').order('created_at', { ascending: false }),
-                800
-            );
-            if (res && !res.error && res.data && res.data.length > 0) {
-                localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(res.data));
-                return res.data;
-            }
-        } catch (e) {
-            console.warn('Supabase fetch employees timeout/error:', e.message);
-        }
     }
 
     return localEmps;
@@ -201,11 +204,26 @@ async function createEmployee(employeeData) {
 }
 
 /**
- * Fetch all evaluations
+ * Fetch all evaluations (Supabase Cloud DB Priority with Local Cache)
  */
 async function fetchEvaluations() {
     if (localStorage.getItem('coffeelab_is_cleared') === 'true') {
         return [];
+    }
+
+    if (isSupabaseConnected()) {
+        try {
+            const res = await withTimeout(
+                supabaseClient.from('evaluations').select('*').order('created_at', { ascending: false }),
+                1500
+            );
+            if (res && !res.error && Array.isArray(res.data) && res.data.length > 0) {
+                localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(res.data));
+                return res.data;
+            }
+        } catch (e) {
+            console.warn('Supabase fetch evaluations fallback:', e.message);
+        }
     }
 
     let localEvals = [];
