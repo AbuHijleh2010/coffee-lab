@@ -5,8 +5,8 @@
 const STORAGE_KEYS = {
     SUPABASE_URL: 'coffeelab_supabase_url',
     SUPABASE_KEY: 'coffeelab_supabase_key',
-    DEMO_EMPLOYEES: 'coffeelab_demo_employees_v6',
-    DEMO_EVALUATIONS: 'coffeelab_demo_evaluations_v6'
+    DEMO_EMPLOYEES: 'coffeelab_demo_employees_v7',
+    DEMO_EVALUATIONS: 'coffeelab_demo_evaluations_v7'
 };
 
 let supabaseClient = null;
@@ -64,113 +64,7 @@ const INITIAL_DEMO_EMPLOYEES = [
     }
 ];
 
-const INITIAL_DEMO_EVALUATIONS = [
-    {
-        id: 'eval_1',
-        employee_id: 'emp_1',
-        evaluator_name: 'إدارة البار',
-        rating: 5.0,
-        hygiene: 5,
-        apron: 5,
-        nails: 5,
-        punctuality: 5,
-        shift_time: 'التزام تام بإدارة الفريق والبار',
-        speed: 5,
-        quality: 5,
-        notes: 'قائد فريق ممتاز والالتزام كامل بأعلى معايير كوفي لاب.',
-        created_at: new Date().toISOString()
-    },
-    {
-        id: 'eval_2',
-        employee_id: 'emp_2',
-        evaluator_name: 'عمرو ابو حجلة',
-        rating: 5.0,
-        hygiene: 5,
-        apron: 5,
-        nails: 5,
-        punctuality: 5,
-        shift_time: 'شفت صباحي',
-        speed: 5,
-        quality: 5,
-        notes: 'أداء ممتاز بالتحضير والالتزام بالنظافة والشفت.',
-        created_at: new Date().toISOString()
-    },
-    {
-        id: 'eval_3',
-        employee_id: 'emp_3',
-        evaluator_name: 'عمرو ابو حجلة',
-        rating: 4.8,
-        hygiene: 5,
-        apron: 5,
-        nails: 4,
-        punctuality: 5,
-        shift_time: 'شفت مسائي',
-        speed: 5,
-        quality: 5,
-        notes: 'سريع جداً في وقت الذروة، دقة عالية في إعداد القهوة.',
-        created_at: new Date().toISOString()
-    },
-    {
-        id: 'eval_4',
-        employee_id: 'emp_4',
-        evaluator_name: 'عمرو ابو حجلة',
-        rating: 4.8,
-        hygiene: 5,
-        apron: 5,
-        nails: 5,
-        punctuality: 5,
-        shift_time: 'شفت صباحي',
-        speed: 4,
-        quality: 5,
-        notes: 'جودة مشروبات عالية جداً ومعاملة ممتازة مع الزبائن.',
-        created_at: new Date().toISOString()
-    },
-    {
-        id: 'eval_5',
-        employee_id: 'emp_5',
-        evaluator_name: 'عمرو ابو حجلة',
-        rating: 5.0,
-        hygiene: 5,
-        apron: 5,
-        nails: 5,
-        punctuality: 5,
-        shift_time: 'شفت مسائي',
-        speed: 5,
-        quality: 5,
-        notes: 'التزام ممتاز بجميع المعايير والترتيب بالبار.',
-        created_at: new Date().toISOString()
-    },
-    {
-        id: 'eval_6',
-        employee_id: 'emp_6',
-        evaluator_name: 'عمرو ابو حجلة',
-        rating: 4.5,
-        hygiene: 5,
-        apron: 5,
-        nails: 5,
-        punctuality: 4,
-        shift_time: 'شفت مسائي',
-        speed: 4,
-        quality: 4,
-        notes: 'تطور ملحوظ في الأداء والسرعة، ممتاز جداً.',
-        created_at: new Date().toISOString()
-    },
-    {
-        id: 'eval_7',
-        employee_id: 'emp_7',
-        evaluator_name: 'عمرو ابو حجلة',
-        rating: 5.0,
-        hygiene: 5,
-        apron: 5,
-        nails: 5,
-        punctuality: 5,
-        shift_time: 'شفت صباحي',
-        speed: 5,
-        quality: 5,
-        notes: 'أداء راقي والتزام كامل بكل المعايير والشفت.',
-        created_at: new Date().toISOString()
-    }
-];
+const INITIAL_DEMO_EVALUATIONS = [];
 
 // Helper function to prevent network hangs with a strict 800ms timeout
 function withTimeout(promise, ms = 800) {
