@@ -117,12 +117,18 @@ async function fetchEmployees() {
 }
 
 /**
- * Add a new employee (Instant permanent save with safe schema fallbacks)
+ * Add a new employee (Instant permanent save with valid UUIDv4 & correct schema columns)
  */
 async function createEmployee(employeeData) {
     const avatarVal = employeeData.avatar_url || employeeData.avatar || '';
+
+    // Generate valid UUIDv4 to satisfy Postgres UUID column requirement
+    const newId = (typeof crypto !== 'undefined' && crypto.randomUUID) ? 
+        crypto.randomUUID() : 
+        '10000000-1000-4000-8000-' + String(Date.now()).padStart(12, '0');
+
     const newEmp = {
-        id: 'emp_' + Date.now(),
+        id: newId,
         name: employeeData.name,
         role: employeeData.role,
         avatar: avatarVal,
@@ -133,7 +139,6 @@ async function createEmployee(employeeData) {
     // 1. Instant local persistence
     try {
         let current = getLocalEmployeesSync();
-        // Remove duplicate if exists
         current = current.filter(e => e.id !== newEmp.id);
         current.unshift(newEmp);
         localStorage.setItem(STORAGE_KEYS.DEMO_EMPLOYEES, JSON.stringify(current));
@@ -141,17 +146,34 @@ async function createEmployee(employeeData) {
         console.error('Error saving to localStorage:', err);
     }
 
-    // 2. Cloud insert with resilient schema fallbacks
+    // 2. Cloud insert with UUID & correct avatar_url column
     if (isSupabaseConnected()) {
-        const payload1 = { id: newEmp.id, name: newEmp.name, role: newEmp.role, avatar: avatarVal, created_at: newEmp.created_at };
-        const payload2 = { id: newEmp.id, name: newEmp.name, role: newEmp.role, avatar_url: avatarVal, created_at: newEmp.created_at };
-        const payload3 = { id: newEmp.id, name: newEmp.name, role: newEmp.role, created_at: newEmp.created_at };
-
         try {
+            const payload1 = {
+                id: newEmp.id,
+                name: newEmp.name,
+                role: newEmp.role,
+                avatar_url: avatarVal,
+                created_at: newEmp.created_at
+            };
             const res1 = await supabaseClient.from('employees').insert([payload1]);
+
             if (res1.error) {
+                console.warn('Payload 1 error, trying fallback without avatar_url:', res1.error.message);
+                const payload2 = {
+                    id: newEmp.id,
+                    name: newEmp.name,
+                    role: newEmp.role,
+                    created_at: newEmp.created_at
+                };
                 const res2 = await supabaseClient.from('employees').insert([payload2]);
+
                 if (res2.error) {
+                    console.warn('Payload 2 error, trying auto UUID generation:', res2.error.message);
+                    const payload3 = {
+                        name: newEmp.name,
+                        role: newEmp.role
+                    };
                     await supabaseClient.from('employees').insert([payload3]);
                 }
             }
@@ -193,17 +215,25 @@ async function fetchEvaluations() {
 }
 
 /**
- * Save new evaluation (Instant permanent save)
+ * Add a new evaluation (Valid UUID & evaluation_date required field)
  */
 async function createEvaluation(evalData) {
+    const newId = (typeof crypto !== 'undefined' && crypto.randomUUID) ? 
+        crypto.randomUUID() : 
+        '20000000-2000-4000-8000-' + String(Date.now()).padStart(12, '0');
+
+    const evalDate = evalData.evaluation_date || new Date().toISOString().split('T')[0];
+
     const newEval = {
-        id: 'eval_' + Date.now(),
+        id: newId,
         ...evalData,
+        evaluation_date: evalDate,
         created_at: new Date().toISOString()
     };
 
     try {
         let current = getLocalEvaluationsSync();
+        current = current.filter(ev => ev.id !== newEval.id);
         current.unshift(newEval);
         localStorage.setItem(STORAGE_KEYS.DEMO_EVALUATIONS, JSON.stringify(current));
     } catch (err) {
@@ -211,23 +241,27 @@ async function createEvaluation(evalData) {
     }
 
     if (isSupabaseConnected()) {
-        const dbPayload = {
-            id: newEval.id,
-            employee_id: newEval.employee_id,
-            evaluator_name: newEval.evaluator_name || '',
-            rating: parseFloat(newEval.rating || 0),
-            hygiene: parseFloat(newEval.hygiene || 0),
-            apron: parseFloat(newEval.apron || 0),
-            nails: parseFloat(newEval.nails || 0),
-            punctuality: parseFloat(newEval.punctuality || 0),
-            speed: parseFloat(newEval.speed || 0),
-            quality: parseFloat(newEval.quality || 0),
-            shift_time: newEval.shift_time || '',
-            notes: newEval.notes || '',
-            created_at: newEval.created_at
-        };
         try {
-            await withTimeout(supabaseClient.from('evaluations').insert([dbPayload]), 2000);
+            const dbPayload1 = {
+                id: newEval.id,
+                employee_id: newEval.employee_id,
+                evaluator_name: newEval.evaluator_name || '',
+                evaluation_date: evalDate,
+                rating: parseFloat(newEval.rating || newEval.overallScore || 5),
+                quality_rating: parseFloat(newEval.quality_rating || 5),
+                speed_rating: parseFloat(newEval.speed_rating || 5),
+                cleanliness_rating: parseFloat(newEval.cleanliness_rating || 5),
+                teamwork_rating: parseFloat(newEval.teamwork_rating || 5),
+                notes: newEval.notes || '',
+                created_at: newEval.created_at
+            };
+            const res1 = await supabaseClient.from('evaluations').insert([dbPayload1]);
+
+            if (res1.error) {
+                console.warn('Evaluation insert payload 1 error, trying auto UUID:', res1.error.message);
+                delete dbPayload1.id;
+                await supabaseClient.from('evaluations').insert([dbPayload1]);
+            }
         } catch (e) {
             console.warn('Supabase insert evaluation note:', e.message);
         }
