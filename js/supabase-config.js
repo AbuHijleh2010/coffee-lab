@@ -86,7 +86,64 @@ function getLocalEvaluationsSync() {
 }
 
 /**
- * Fetch all employees (Supabase Live Cloud DB with Strict 1000ms Timeout)
+ * Automatically sync any unsynced local data to Supabase Cloud DB using upsert
+ */
+async function syncUnsyncedToCloud(cloudEmployees = [], cloudEvaluations = []) {
+    if (!isSupabaseConnected()) return;
+
+    try {
+        const localEmps = getLocalEmployeesSync();
+        if (localEmps.length > 0) {
+            const cloudEmpIds = new Set(cloudEmployees.map(e => e.id));
+            const unsyncedEmps = localEmps.filter(e => e && e.id && !cloudEmpIds.has(e.id));
+
+            for (const emp of unsyncedEmps) {
+                const dbPayload = {
+                    id: emp.id,
+                    name: emp.name,
+                    role: emp.role,
+                    avatar: emp.avatar || emp.avatar_url || '',
+                    created_at: emp.created_at || new Date().toISOString()
+                };
+                await supabaseClient.from('employees').upsert([dbPayload]).catch(() => {});
+            }
+        }
+    } catch (e) {
+        console.warn('Sync emps to cloud note:', e);
+    }
+
+    try {
+        const localEvals = getLocalEvaluationsSync();
+        if (localEvals.length > 0) {
+            const cloudEvalIds = new Set(cloudEvaluations.map(ev => ev.id));
+            const unsyncedEvals = localEvals.filter(ev => ev && ev.id && !cloudEvalIds.has(ev.id));
+
+            for (const ev of unsyncedEvals) {
+                const dbPayload = {
+                    id: ev.id,
+                    employee_id: ev.employee_id,
+                    evaluator_name: ev.evaluator_name || '',
+                    rating: parseFloat(ev.rating || 0),
+                    hygiene: parseFloat(ev.hygiene || 0),
+                    apron: parseFloat(ev.apron || 0),
+                    nails: parseFloat(ev.nails || 0),
+                    punctuality: parseFloat(ev.punctuality || 0),
+                    speed: parseFloat(ev.speed || 0),
+                    quality: parseFloat(ev.quality || 0),
+                    shift_time: ev.shift_time || '',
+                    notes: ev.notes || '',
+                    created_at: ev.created_at || new Date().toISOString()
+                };
+                await supabaseClient.from('evaluations').upsert([dbPayload]).catch(() => {});
+            }
+        }
+    } catch (e) {
+        console.warn('Sync evals to cloud note:', e);
+    }
+}
+
+/**
+ * Fetch all employees (Merged Live Cloud & Instant Local Cache)
  */
 async function fetchEmployees() {
     const local = getLocalEmployeesSync();
@@ -98,6 +155,9 @@ async function fetchEmployees() {
                 1500
             );
             if (res && !res.error && Array.isArray(res.data)) {
+                // Auto sync any local items up to Supabase Cloud DB
+                syncUnsyncedToCloud(res.data, []);
+
                 const cloudMap = new Map();
                 res.data.forEach(emp => {
                     if (emp && emp.id) cloudMap.set(emp.id, emp);
