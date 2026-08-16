@@ -13,8 +13,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@500;700;800&family=Readex+Pro:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Main CSS (Imperial Midnight Velvet Obsidian & 24K Royal Gold Edition v6000) -->
-    <link rel="stylesheet" href="css/style.css?v=6000.0">
+    <!-- Main CSS (Imperial Midnight Velvet Obsidian & 24K Royal Gold Edition v7000) -->
+    <link rel="stylesheet" href="css/style.css?v=7000.0">
     <!-- Supabase JS Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -279,14 +279,38 @@
                     </div>
                 </div>
 
+                <!-- Espresso Shot Extraction Parameters (Espresso Station Specific) -->
+                <div id="espressoExtractionBlock" class="criteria-card-box" style="margin-top: 1rem; border-color: var(--gold-pure); display: none;">
+                    <h4><i class="fa-solid fa-calculator"></i> معايرة الجرعة ووقت استخلاص الإسبريسو (Espresso Shot Parameters):</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="espressoDoseStatus"><i class="fa-solid fa-scale-balanced"></i> وزن الجرعة (Dose Weight in Grams)</label>
+                            <select id="espressoDoseStatus" class="custom-select">
+                                <option value="مثالي (18g - 20g بالميزان)">🟢 مثالي (18g - 20g معايير دقيقة بالميزان)</option>
+                                <option value="زيادة أو نقصان خفيف عن المعيار">🟡 فيه زيادة أو نقصان خفيف عن المعيار</option>
+                                <option value="غير مضبوطة ولا يستخدم الميزان">🔴 غير مضبوطة / لا يزن الجرعة</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="espressoExtractionStatus"><i class="fa-solid fa-stopwatch"></i> وقت الاستخلاص بالثواني (Extraction Time)</label>
+                            <select id="espressoExtractionStatus" class="custom-select">
+                                <option value="مثالي (25 - 30 ثانية تدفق متناسق)">🟢 مثالي (25 - 30 ثانية تدفق كريمي غني)</option>
+                                <option value="استخلاص سريع جداً (Under-extracted)">🟡 استخلاص سريع جداً (أقل من 20 ثانية / خفيف)</option>
+                                <option value="استخلاص بطيء/محروق (Over-extracted)">🔴 استخلاص بطيء جداً (أكثر من 35 ثانية / محروق)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Rating Criteria Inputs -->
                 <div class="rating-criteria-container">
-                    <h3><i class="fa-solid fa-sliders"></i> التقييم الميداني الشامل (من 1 إلى 5):</h3>
+                    <h3><i class="fa-solid fa-sliders"></i> التقييم الميداني الدقيق والمفصل (من 1 إلى 5):</h3>
                     
+                    <!-- 1. Technical Quality (Dynamic Title per station) -->
                     <div class="criteria-row">
                         <div class="criteria-info">
-                            <span class="criteria-title" id="lblQualityTitle"><i class="fa-solid fa-coffee"></i> الجودة والاستخلاص والتبخير</span>
-                            <span class="criteria-desc" id="lblQualityDesc">درجة الطحن، الاستخلاص الصحيح، درجة حرارة التبخير والرسم</span>
+                            <span class="criteria-title" id="lblQualityTitle"><i class="fa-solid fa-coffee"></i> الجودة والمهارة الفنية للمحطة</span>
+                            <span class="criteria-desc" id="lblQualityDesc">الالتزام بالمعايير الفنية والريسبي المعياري</span>
                         </div>
                         <div class="star-rating-input" data-rating-target="qualityRating">
                             <input type="hidden" id="qualityRating" value="5">
@@ -301,10 +325,11 @@
                         </div>
                     </div>
 
+                    <!-- 2. Speed & Efficiency (Dynamic Title per station) -->
                     <div class="criteria-row">
                         <div class="criteria-info">
-                            <span class="criteria-title" id="lblSpeedTitle"><i class="fa-solid fa-stopwatch"></i> السرعة والالتزام بالريسبي والميزان</span>
-                            <span class="criteria-desc" id="lblSpeedDesc">استخدام الميزان والشيقر والسرعة في تحضير الطلبات</span>
+                            <span class="criteria-title" id="lblSpeedTitle"><i class="fa-solid fa-bolt"></i> السرعة والإنتاجية وتدفق الطلبات</span>
+                            <span class="criteria-desc" id="lblSpeedDesc">سرعة الإنجاز وتنسيق الأوردرات بدون تأخير</span>
                         </div>
                         <div class="star-rating-input" data-rating-target="speedRating">
                             <input type="hidden" id="speedRating" value="5">
@@ -319,10 +344,11 @@
                         </div>
                     </div>
 
+                    <!-- 3. Bar & Equipment Cleanliness -->
                     <div class="criteria-row">
                         <div class="criteria-info">
-                            <span class="criteria-title" id="lblCleanTitle"><i class="fa-solid fa-broom"></i> نظافة البار والالتزام بتواريخ الفتح FIFO</span>
-                            <span class="criteria-desc" id="lblCleanDesc">نظافة الأجهزة والثلاجات وتوثيق تاريخ الفتح على الحليب النباتي والخلطات</span>
+                            <span class="criteria-title"><i class="fa-solid fa-broom"></i> نظافة البار والأجهزة العامة</span>
+                            <span class="criteria-desc">هل البار والأجهزة والمعدات نظيفة وخالية من الأوساخ؟</span>
                         </div>
                         <div class="star-rating-input" data-rating-target="cleanlinessRating">
                             <input type="hidden" id="cleanlinessRating" value="5">
@@ -337,9 +363,67 @@
                         </div>
                     </div>
 
+                    <!-- 4. Bar Organization & Arrangement -->
                     <div class="criteria-row">
                         <div class="criteria-info">
-                            <span class="criteria-title" id="lblTeamTitle"><i class="fa-solid fa-handshake"></i> الانضباط والعمل الجماعي</span>
+                            <span class="criteria-title"><i class="fa-solid fa-layer-group"></i> ترتيب وتنسيق البار والأغراض</span>
+                            <span class="criteria-desc">هل كل شيء في مكانه المخصص والموزع بشكل صحيح؟</span>
+                        </div>
+                        <div class="star-rating-input" data-rating-target="organizationRating">
+                            <input type="hidden" id="organizationRating" value="5">
+                            <div class="stars" id="organizationStars">
+                                <i class="fa-solid fa-star active" data-val="1"></i>
+                                <i class="fa-solid fa-star active" data-val="2"></i>
+                                <i class="fa-solid fa-star active" data-val="3"></i>
+                                <i class="fa-solid fa-star active" data-val="4"></i>
+                                <i class="fa-solid fa-star active" data-val="5"></i>
+                            </div>
+                            <span class="rating-num" id="organizationRatingVal">5/5</span>
+                        </div>
+                    </div>
+
+                    <!-- 5. Clean & Methodical Work Style -->
+                    <div class="criteria-row">
+                        <div class="criteria-info">
+                            <span class="criteria-title"><i class="fa-solid fa-sparkles"></i> طريقة الشغل للنظافة والترتيب أثناء العمل</span>
+                            <span class="criteria-desc">هل يشتغل بنظافة وترتيب وسلاسة أثناء الضغط وإعداد الطلبات؟</span>
+                        </div>
+                        <div class="star-rating-input" data-rating-target="workMethodRating">
+                            <input type="hidden" id="workMethodRating" value="5">
+                            <div class="stars" id="workMethodStars">
+                                <i class="fa-solid fa-star active" data-val="1"></i>
+                                <i class="fa-solid fa-star active" data-val="2"></i>
+                                <i class="fa-solid fa-star active" data-val="3"></i>
+                                <i class="fa-solid fa-star active" data-val="4"></i>
+                                <i class="fa-solid fa-star active" data-val="5"></i>
+                            </div>
+                            <span class="rating-num" id="workMethodRatingVal">5/5</span>
+                        </div>
+                    </div>
+
+                    <!-- 6. Returning Items to Spot -->
+                    <div class="criteria-row">
+                        <div class="criteria-info">
+                            <span class="criteria-title"><i class="fa-solid fa-rotate-left"></i> إرجاع الأدوات والمعدات لمكانها فوراً</span>
+                            <span class="criteria-desc">هل يُرجع البتشرات، الشيقر، والمعدات لمكانها المخصص بعد الاستخدام مباشرة؟</span>
+                        </div>
+                        <div class="star-rating-input" data-rating-target="returnItemsRating">
+                            <input type="hidden" id="returnItemsRating" value="5">
+                            <div class="stars" id="returnItemsStars">
+                                <i class="fa-solid fa-star active" data-val="1"></i>
+                                <i class="fa-solid fa-star active" data-val="2"></i>
+                                <i class="fa-solid fa-star active" data-val="3"></i>
+                                <i class="fa-solid fa-star active" data-val="4"></i>
+                                <i class="fa-solid fa-star active" data-val="5"></i>
+                            </div>
+                            <span class="rating-num" id="returnItemsRatingVal">5/5</span>
+                        </div>
+                    </div>
+
+                    <!-- 7. Teamwork & Conduct -->
+                    <div class="criteria-row">
+                        <div class="criteria-info">
+                            <span class="criteria-title" id="lblTeamTitle"><i class="fa-solid fa-handshake"></i> الانضباط والعمل الجماعي والتعاون</span>
                             <span class="criteria-desc" id="lblTeamDesc">الالتزام بتوجيهات الهيد بار والتعاون مع فريق الشفت</span>
                         </div>
                         <div class="star-rating-input" data-rating-target="teamworkRating">
@@ -553,7 +637,7 @@
     <div id="toastContainer" class="toast-container"></div>
 
     <!-- Application JavaScript Files -->
-    <script src="js/supabase-config.js?v=6000.0"></script>
-    <script src="js/app.js?v=6000.0"></script>
+    <script src="js/supabase-config.js?v=7000.0"></script>
+    <script src="js/app.js?v=7000.0"></script>
 </body>
 </html>

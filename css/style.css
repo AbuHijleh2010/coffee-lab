@@ -1230,12 +1230,21 @@ body {
     box-shadow: 0 0 14px rgba(16, 185, 129, 0.35);
 }
 
-/* 🟡 Needs Foam / Refill State */
-.btn-status-pill.pill-foam.active {
+/* 🟡 Needs Foam / Light Clean State */
+.btn-status-pill.pill-foam.active,
+.btn-status-pill.pill-lightclean.active {
     background: rgba(245, 158, 11, 0.22);
     border-color: #f59e0b;
     color: #fbbf24;
     box-shadow: 0 0 14px rgba(245, 158, 11, 0.35);
+}
+
+/* 🟦 Needs Refill / Filling State */
+.btn-status-pill.pill-refill.active {
+    background: rgba(56, 189, 248, 0.22);
+    border-color: #38bdf8;
+    color: #7dd3fc;
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
 }
 
 /* 🔴 Dirty / Cleaning Needed State */
@@ -1258,5 +1267,7 @@ body {
 }
 .badge-pill-clean { background: rgba(16, 185, 129, 0.18); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
 .badge-pill-foam { background: rgba(245, 158, 11, 0.18); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+.badge-pill-lightclean { background: rgba(245, 158, 11, 0.18); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+.badge-pill-refill { background: rgba(56, 189, 248, 0.18); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.4); }
 .badge-pill-dirty { background: rgba(239, 68, 68, 0.18); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }
 
