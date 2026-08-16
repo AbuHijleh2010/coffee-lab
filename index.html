@@ -13,8 +13,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@500;700;800&family=Readex+Pro:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Main CSS (Imperial Midnight Velvet Obsidian & 24K Royal Gold Edition v8000) -->
-    <link rel="stylesheet" href="css/style.css?v=8000.0">
+    <!-- Main CSS (Imperial Midnight Velvet Obsidian & 24K Royal Gold Edition v9000) -->
+    <link rel="stylesheet" href="css/style.css?v=9000.0">
     <!-- Supabase JS Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -284,19 +284,19 @@
                     <h4><i class="fa-solid fa-calculator"></i> معايرة الجرعة ووقت استخلاص الإسبريسو (Espresso Shot Parameters):</h4>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="espressoDoseStatus"><i class="fa-solid fa-scale-balanced"></i> وزن الجرعة (Dose Weight in Grams)</label>
+                            <label for="espressoDoseStatus"><i class="fa-solid fa-scale-balanced"></i> وزن الجرعة بالميزان (Dose Weight)</label>
                             <select id="espressoDoseStatus" class="custom-select">
-                                <option value="مثالي (18g - 20g بالميزان)">🟢 مثالي (18g - 20g معايير دقيقة بالميزان)</option>
-                                <option value="زيادة أو نقصان خفيف عن المعيار">🟡 فيه زيادة أو نقصان خفيف عن المعيار</option>
-                                <option value="غير مضبوطة ولا يستخدم الميزان">🔴 غير مضبوطة / لا يزن الجرعة</option>
+                                <option value="🟢 ممتازة ومثالية (17.9g - 18g - 18.1g)">🟢 ممتازة ومثالية (17.9g - 18g - 18.1g)</option>
+                                <option value="🔴 غير معيرة - جرعة قليلة (17.7g وأقل)">🔴 غير معيرة - جرعة قليلة (17.7g وأقل)</option>
+                                <option value="🔴 غير معيرة - جرعة زائدة (18.2g وأكثر)">🔴 غير معيرة - جرعة زائدة (18.2g وأكثر)</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="espressoExtractionStatus"><i class="fa-solid fa-stopwatch"></i> وقت الاستخلاص بالثواني (Extraction Time)</label>
                             <select id="espressoExtractionStatus" class="custom-select">
-                                <option value="مثالي (25 - 30 ثانية تدفق متناسق)">🟢 مثالي (25 - 30 ثانية تدفق كريمي غني)</option>
-                                <option value="استخلاص سريع جداً (Under-extracted)">🟡 استخلاص سريع جداً (أقل من 20 ثانية / خفيف)</option>
-                                <option value="استخلاص بطيء/محروق (Over-extracted)">🔴 استخلاص بطيء جداً (أكثر من 35 ثانية / محروق)</option>
+                                <option value="🟢 استخلاص صحيح وممتاز (30 - 32 ثانية)">🟢 استخلاص صحيح وممتاز (30 - 32 ثانية)</option>
+                                <option value="🔴 استخلاص بطيء - الطحنة ناعمة جداً (32 ثانية وأكثر)">🔴 استخلاص بطيء - الطحنة ناعمة جداً (32 ثانية وأكثر)</option>
+                                <option value="🔴 استخلاص سريع - الطحنة خشنة جداً (28 ثانية وأقل)">🔴 استخلاص سريع - الطحنة خشنة جداً (28 ثانية وأقل)</option>
                             </select>
                         </div>
                     </div>
@@ -637,7 +637,7 @@
     <div id="toastContainer" class="toast-container"></div>
 
     <!-- Application JavaScript Files -->
-    <script src="js/supabase-config.js?v=8000.0"></script>
-    <script src="js/app.js?v=8000.0"></script>
+    <script src="js/supabase-config.js?v=9000.0"></script>
+    <script src="js/app.js?v=9000.0"></script>
 </body>
 </html>

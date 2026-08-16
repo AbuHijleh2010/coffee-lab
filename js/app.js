@@ -557,10 +557,10 @@ function openEvaluationModal(selectedEmployeeId = null, evalToEdit = null) {
         document.getElementById('teamworkRating').value = evalToEdit.teamwork_rating || 5;
 
         if (document.getElementById('espressoDoseStatus')) {
-            document.getElementById('espressoDoseStatus').value = evalToEdit.espresso_dose_status || 'مثالي (18g - 20g بالميزان)';
+            document.getElementById('espressoDoseStatus').value = evalToEdit.espresso_dose_status || '🟢 ممتازة ومثالية (17.9g - 18g - 18.1g)';
         }
         if (document.getElementById('espressoExtractionStatus')) {
-            document.getElementById('espressoExtractionStatus').value = evalToEdit.espresso_extraction_status || 'مثالي (25 - 30 ثانية تدفق متناسق)';
+            document.getElementById('espressoExtractionStatus').value = evalToEdit.espresso_extraction_status || '🟢 استخلاص صحيح وممتاز (30 - 32 ثانية)';
         }
 
         document.getElementById('apronUniformStatus').value = evalToEdit.apronUniformStatus || 'نظيف ومرتب بالكامل';
@@ -899,8 +899,8 @@ function openDetailsModal(empId) {
                         <div class="notes-box" style="border-right-color: var(--gold-pure); background: rgba(217, 119, 6, 0.12); margin-top: 0.65rem;">
                             <strong style="color: var(--gold-pure);"><i class="fa-solid fa-calculator"></i> معايرة شوت الإسبريسو:</strong>
                             <div style="font-size: 0.86rem; margin-top: 0.25rem; color: var(--text-main);">
-                                • وزن الجرعة (Dose Weight): <strong>${ev.espresso_dose_status || 'مثالي (18g-20g)'}</strong><br>
-                                • وقت الاستخلاص (Extraction Time): <strong>${ev.espresso_extraction_status || 'مثالي (25s-30s)'}</strong>
+                                • وزن الجرعة (Dose Weight): <strong>${ev.espresso_dose_status || '🟢 ممتازة ومثالية (17.9g - 18g - 18.1g)'}</strong><br>
+                                • وقت الاستخلاص (Extraction Time): <strong>${ev.espresso_extraction_status || '🟢 استخلاص صحيح وممتاز (30 - 32 ثانية)'}</strong>
                             </div>
                         </div>
                     ` : ''}
