@@ -319,7 +319,7 @@ async function deleteSingleEvaluation(evalId) {
 }
 
 /**
- * Delete all employees and evaluations permanently
+ * Delete all employees and evaluations permanently (Clean Cloud Database Reset)
  */
 async function deleteAllEmployees() {
     try {
@@ -330,8 +330,14 @@ async function deleteAllEmployees() {
     }
 
     if (isSupabaseConnected()) {
-        withTimeout(supabaseClient.from('employees').delete().neq('id', '0'), 1500).catch(() => {});
-        withTimeout(supabaseClient.from('evaluations').delete().neq('id', '0'), 1500).catch(() => {});
+        try {
+            // 1. Delete evaluations first to satisfy foreign key constraints
+            await supabaseClient.from('evaluations').delete().gt('created_at', '1970-01-01T00:00:00Z');
+            // 2. Then delete employees
+            await supabaseClient.from('employees').delete().gt('created_at', '1970-01-01T00:00:00Z');
+        } catch (e) {
+            console.error('Error in deleteAllEmployees:', e);
+        }
     }
 
     return true;
