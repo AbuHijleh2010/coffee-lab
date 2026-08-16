@@ -193,7 +193,7 @@ async function createEmployee(employeeData) {
     }
 
     if (isSupabaseConnected()) {
-        withTimeout(supabaseClient.from('employees').insert([employeeData]), 1000).catch(() => {});
+        withTimeout(supabaseClient.from('employees').insert([newEmp]), 1000).catch(() => {});
     }
 
     return newEmp;
@@ -271,7 +271,7 @@ async function createEvaluation(evalData) {
     }
 
     if (isSupabaseConnected()) {
-        withTimeout(supabaseClient.from('evaluations').insert([evalData]), 1000).catch(() => {});
+        withTimeout(supabaseClient.from('evaluations').insert([newEval]), 1000).catch(() => {});
     }
 
     return newEval;
